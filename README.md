@@ -1,8 +1,8 @@
 # AUTODARTS-VOICE
 [![Downloads](https://img.shields.io/github/downloads/lbormann/autodarts-voice/total.svg)](https://github.com/lbormann/autodarts-voice/releases/latest)
 
-Autodarts-voice transcribes voice in realtime to control an autodarts-game. A running instance of https://github.com/lbormann/autodarts-caller is needed for processing commands.
-
+Autodarts-voice transcribes voice in realtime (offline) to control an autodarts-game. A running instance of https://github.com/lbormann/autodarts-caller is needed for processing commands.
+Autodarts-voice uses vsok. check it out: https://alphacephei.com/vosk
 
 
 ## INSTALL INSTRUCTION
@@ -52,7 +52,7 @@ Go to download-directory and type:
 
 Create a shortcut of the executable; right click on the shortcut -> select properties -> add arguments in the target input at the end of the text field.
 
-Example: C:\Downloads\autodarts-voice.exe -MP "vosk-model-small-en-us-0.15"
+Example: C:\Downloads\autodarts-voice.exe -MP "C:\\vosk-models\\vosk-model-small-en-us-0.15"
 
 Save changes.
 Click on the shortcut to start the application.
@@ -62,7 +62,7 @@ Click on the shortcut to start the application.
 
 #### Example: Linux
 
-    python3 autodarts-voice.py -MP "vosk-model-small-en-us-0.15"
+    python3 autodarts-voice.py -MP "C:\\vosk-models\\vosk-model-small-en-us-0.15"
 
 
 ### Usage
@@ -76,7 +76,6 @@ Here are some examples that could work out of the box with model [vosk-model-sma
 
 #### Dart-correction
 
-Say..
 - First twenty
 - First single twenty
 - Second triple twelve
@@ -84,14 +83,15 @@ Say..
 - Last double ten
 - Second is two
 - Last is number three
+- Second is twenty five
+- First is fifty
 
 #### Go next
 
-Say..
 - Next
 
 #### Go back
-Say..
+
 - Back
 - Undo
 
@@ -102,7 +102,7 @@ Say..
 - -CON / --connection [OPTIONAL] [Default: "127.0.0.1:8079"] 
 - -MP / --model_path [REQUIRED] [Default: '']
 - -KN / --keywords_next [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: ["next"]]
-- -KU / --keywords_undo [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: ["undo", "back"]]
+- -KU / --keywords_undo [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: ["undo", "back", "bag"]]
 - -KFD / --keywords_first_dart [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: ["first", "for", "prime", "up"]]
 - -KSD / --keywords_second_dart [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: ["second", "middle"]]
 

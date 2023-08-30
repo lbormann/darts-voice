@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import platform
 import argparse
 import websocket
@@ -19,6 +20,8 @@ logger=logging.getLogger()
 logger.handlers.clear()
 logger.setLevel(logging.INFO)
 logger.addHandler(sh)
+
+main_directory = os.path.dirname(os.path.realpath(__file__))
 
 
 
@@ -45,17 +48,16 @@ DEFAULT_KEYWORDS_NINE = ["nine"]
 DEFAULT_KEYWORDS_TEN = ["ten", "turn"]
 DEFAULT_KEYWORDS_ELEVEN = ["eleven", "level"]
 DEFAULT_KEYWORDS_TWELVE = ["twelve", "twelfth"]
-DEFAULT_KEYWORDS_THIRTEEN = ["thirteen"]
-DEFAULT_KEYWORDS_FOURTEEN = ["fourteen"]
+DEFAULT_KEYWORDS_THIRTEEN = ["thirteen", "thirty"]
+DEFAULT_KEYWORDS_FOURTEEN = ["fourteen", "fourty"]
 DEFAULT_KEYWORDS_FIFTEEN = ["fifteen"]
-DEFAULT_KEYWORDS_SIXTEEN = ["sixteen"]
-DEFAULT_KEYWORDS_SEVENTEEN = ["seventeen"]
-DEFAULT_KEYWORDS_EIGHTEEN = ["eighteen"]
+DEFAULT_KEYWORDS_SIXTEEN = ["sixteen", "sixty"]
+DEFAULT_KEYWORDS_SEVENTEEN = ["seventeen", "seventy"]
+DEFAULT_KEYWORDS_EIGHTEEN = ["eighteen", "eighty"]
 DEFAULT_KEYWORDS_NINETEEN = ["nineteen", "ninety"]
 DEFAULT_KEYWORDS_TWENTY = ["twenty"]
 DEFAULT_KEYWORDS_TWENTY_FIVE = ["twenty five", "bull", "bullet", "boy"]
 DEFAULT_KEYWORDS_FIFTY = ["fifty", "bullseye"]
-
 
 FIELD_NAME_MAP = {}
 
@@ -193,7 +195,7 @@ def start_voice_recognition():
 
             # lang="en-us"
             # vosk-model-en-us-daanzu-20200905
-            model = Model(model_path=MODEL_PATH)
+            model = Model(model_path=str(MODEL_PATH))
             rec = KaldiRecognizer(model, samplerate)
         
             with sd.RawInputStream(samplerate = samplerate, 
@@ -227,7 +229,7 @@ def start_voice_recognition():
                                 ppi(f"Command 'CORRECT': Dart {dart_number} = {dart_field}")
                                 if WS_DATA_FEEDER is not None:
                                     WS_DATA_FEEDER.send(f'correct:{(dart_number - 1)}:{dart_field}')
-                                # continue
+                                continue
                             
                             ppi(f"Unrecognized-Command: {stt_result}")
      
@@ -317,29 +319,10 @@ if __name__ == "__main__":
 
     args = vars(ap.parse_args())
 
-   
-
-    global WS_DATA_FEEDER
-    WS_DATA_FEEDER = None
-
-    global THROW_NUMBER_MAP
-    THROW_NUMBER_MAP = None
-
-
-    osType = platform.system()
-    osName = os.name
-    osRelease = platform.release()
-    ppi('\r\n', None, '')
-    ppi('##########################################', None, '')
-    ppi('       WELCOME TO AUTODARTS-VOICE', None, '')
-    ppi('##########################################', None, '')
-    ppi('VERSION: ' + VERSION, None, '')
-    ppi('RUNNING OS: ' + osType + ' | ' + osName + ' | ' + osRelease, None, '')
-    ppi('\r\n', None, '')
 
     DEBUG = args['debug']
     CON = args['connection']
-    MODEL_PATH = args['model_path']
+    MODEL_PATH = Path(args['model_path'])
     KEYWORDS_NEXT = args['keywords_next']
     KEYWORDS_UNDO = args['keywords_undo']
     KEYWORDS_FIRST_DART = args['keywords_first_dart']
@@ -372,17 +355,53 @@ if __name__ == "__main__":
     KEYWORDS_TWENTY_FIVE = args["keywords_twenty_five"]
     KEYWORDS_FIFTY = args["keywords_fifty"]
 
-
-
+    if DEBUG:
+        ppi('Started with following arguments:')
+        ppi(json.dumps(args, indent=4))
+    
+    args_post_check = None
     try:
-        connect_data_feeder()
-    except Exception as e:
-        ppe("Connect failed: ", e)
+        if os.path.commonpath([MODEL_PATH, main_directory]) == main_directory:
+            args_post_check = 'MODEL_PATH resides inside MAIN-DIRECTORY! It is not allowed!'
+    except:
+        pass
 
-    try:
-        start_voice_recognition()
-    except Exception as e:
-        ppe("Initializing voice recognition failed: ", e)
+
+
+    global WS_DATA_FEEDER
+    WS_DATA_FEEDER = None
+
+    global THROW_NUMBER_MAP
+    THROW_NUMBER_MAP = None
+
+
+
+
+    osType = platform.system()
+    osName = os.name
+    osRelease = platform.release()
+    ppi('\r\n', None, '')
+    ppi('##########################################', None, '')
+    ppi('       WELCOME TO AUTODARTS-VOICE', None, '')
+    ppi('##########################################', None, '')
+    ppi('VERSION: ' + VERSION, None, '')
+    ppi('RUNNING OS: ' + osType + ' | ' + osName + ' | ' + osRelease, None, '')
+    ppi('\r\n', None, '')
+
+
+    if args_post_check is not None: 
+        ppi('Please check your arguments: ' + args_post_check)
+    else:
+
+        try:
+            connect_data_feeder()
+        except Exception as e:
+            ppe("Connect failed: ", e)
+
+        try:
+            start_voice_recognition()
+        except Exception as e:
+            ppe("Initializing voice recognition failed: ", e)
 
 
 time.sleep(30)
