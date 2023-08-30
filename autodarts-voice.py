@@ -162,7 +162,6 @@ def init_keywords():
                 FIELD_NAME_MAP[word] = "S" + number
             else:
                 FIELD_NAME_MAP[word] = number
-    # # "zero": "0", "twenty five": "25", "fifty": "50"
     # ppi(f'FIELD_NAME_MAP: {FIELD_NAME_MAP}')
 
 def start_voice_recognition():
@@ -205,39 +204,44 @@ def start_voice_recognition():
                                     channels = 1, 
                                     callback = callback):
                 while True:
-                    data = q.get()
-                    if rec.AcceptWaveform(data):
-                        stt_result = rec.Result()
-                        stt_result = json.loads(stt_result)
-                        stt_result = stt_result['text']
-                        if stt_result != '':
-                            if text2next(stt_result):
-                                ppi(f"Command 'NEXT'")
-                                if WS_DATA_FEEDER is not None:
-                                    WS_DATA_FEEDER.send('next')
-                                continue
+                    try:
+                        data = q.get()
+                        if rec.AcceptWaveform(data):
+                            stt_result = rec.Result()
+                            stt_result = json.loads(stt_result)
+                            stt_result = stt_result['text']
+                            if stt_result != '':
+                                if text2next(stt_result):
+                                    ppi(f"Command 'NEXT'")
+                                    if WS_DATA_FEEDER is not None:
+                                        WS_DATA_FEEDER.send('next')
+                                    continue
 
-                            if text2undo(stt_result):
-                                ppi(f"Command 'UNDO'")
-                                if WS_DATA_FEEDER is not None:
-                                    WS_DATA_FEEDER.send('undo')
-                                continue
+                                if text2undo(stt_result):
+                                    ppi(f"Command 'UNDO'")
+                                    if WS_DATA_FEEDER is not None:
+                                        WS_DATA_FEEDER.send('undo')
+                                    continue
+                                
+                                (dart_number, dart_field) = text2dart_score(stt_result)
+                                # ppi(f"Command 't2d-debug': Dart {dart_number} = {dart_field}")
+                                if dart_number != None and dart_field != None:
+                                    ppi(f"Command 'CORRECT': Dart {dart_number} = {dart_field}")
+                                    if WS_DATA_FEEDER is not None:
+                                        WS_DATA_FEEDER.send(f'correct:{(dart_number - 1)}:{dart_field}')
+                                    continue
+                                
+                                ppi(f"Unrecognized-Command: {stt_result}")
+        
+                        # else:
+                            # stt_result = rec.PartialResult()
+                            # stt_result = json.loads(stt_result)
+                            # stt_result = stt_result['transcription']
+                            # ppi(f"Voice-Recognition: (Partial): {stt_result}")
                             
-                            (dart_number, dart_field) = text2dart_score(stt_result)
-                            # ppi(f"Command 't2d-debug': Dart {dart_number} = {dart_field}")
-                            if dart_number != None and dart_field != None:
-                                ppi(f"Command 'CORRECT': Dart {dart_number} = {dart_field}")
-                                if WS_DATA_FEEDER is not None:
-                                    WS_DATA_FEEDER.send(f'correct:{(dart_number - 1)}:{dart_field}')
-                                continue
-                            
-                            ppi(f"Unrecognized-Command: {stt_result}")
-     
-                    # else:
-                        # stt_result = rec.PartialResult()
-                        # stt_result = json.loads(stt_result)
-                        # stt_result = stt_result['transcription']
-                        # ppi(f"Voice-Recognition: (Partial): {stt_result}")
+                    except Exception as e:
+                        ppe("Recognition-step failed: ", e)
+
 
         except Exception as e:
             ppe("KaldiRecognizer initialization failed: ", e)

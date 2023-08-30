@@ -42,8 +42,8 @@ Go to download-directory and type:
 ### Prerequisite
 
 * You need to have a running caller - https://github.com/lbormann/autodarts-caller - (latest version)
-* Download and extract a model from here: https://alphacephei.com/vosk/models
-* Make sure your machine is strong enough to handle complexity of chosen model (large models claim high memory usage).
+* Download and extract a model from here: https://alphacephei.com/vosk/models (recommendable: https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip)
+* Make sure your machine is strong enough to handle complexity of model (large models claim high memory usage).
 * Make sure your microphone is configured as default in os.
 
 ### Run by executable
