@@ -1,4 +1,4 @@
-start-custom.bat
+start-custom*.bat
 build
 dist
 *.txt

@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import os
 from pathlib import Path
 import platform
@@ -8,10 +10,11 @@ import logging
 import time
 import queue
 import sounddevice as sd
-from vosk import Model, KaldiRecognizer
+from vosk import Model, KaldiRecognizer, SetLogLevel
 import sys
 import json
 
+SetLogLevel(0)
 sh = logging.StreamHandler()
 sh.setLevel(logging.INFO)
 formatter = logging.Formatter('%(message)s')
@@ -25,42 +28,96 @@ main_directory = os.path.dirname(os.path.realpath(__file__))
 
 
 
+
+
+
 VERSION = '1.0.0'
 
-DEFAULT_KEYWORDS_NEXT = ["next"]
-DEFAULT_KEYWORDS_UNDO = ["undo", "back", "bag"]
-DEFAULT_KEYWORDS_FIRST_DART = ["first", "for", "prime", "up"]
-DEFAULT_KEYWORDS_SECOND_DART = ["second", "middle"]
-DEFAULT_KEYWORDS_THIRD_DART = ["third", "thought", "last", "down"]
-DEFAULT_KEYWORDS_SINGLE = ["single", "singer", "simple"]
-DEFAULT_KEYWORDS_DOUBLE = ["double", "tablet", "number", "great", "big"]
-DEFAULT_KEYWORDS_TRIPLE = ["triple", "perfect", "tribal", "couple", "templar", "tumbler"]
-DEFAULT_KEYWORDS_ZERO = ["zero", "miss", "his", "myth"]
-DEFAULT_KEYWORDS_ONE = ["one"]
-DEFAULT_KEYWORDS_TWO = ["two", "to", "too"]
-DEFAULT_KEYWORDS_THREE = ["three", "free"]
-DEFAULT_KEYWORDS_FOUR = ["four", "for", "thor"]
-DEFAULT_KEYWORDS_FIVE = ["five", "size"]
-DEFAULT_KEYWORDS_SIX = ["six"]
-DEFAULT_KEYWORDS_SEVEN = ["seven"]
-DEFAULT_KEYWORDS_EIGHT = ["eight", "aid"]
-DEFAULT_KEYWORDS_NINE = ["nine"]
-DEFAULT_KEYWORDS_TEN = ["ten", "turn"]
-DEFAULT_KEYWORDS_ELEVEN = ["eleven", "level"]
-DEFAULT_KEYWORDS_TWELVE = ["twelve", "twelfth"]
-DEFAULT_KEYWORDS_THIRTEEN = ["thirteen", "thirty"]
-DEFAULT_KEYWORDS_FOURTEEN = ["fourteen", "fourty"]
-DEFAULT_KEYWORDS_FIFTEEN = ["fifteen"]
-DEFAULT_KEYWORDS_SIXTEEN = ["sixteen", "sixty"]
-DEFAULT_KEYWORDS_SEVENTEEN = ["seventeen", "seventy"]
-DEFAULT_KEYWORDS_EIGHTEEN = ["eighteen", "eighty"]
-DEFAULT_KEYWORDS_NINETEEN = ["nineteen", "ninety"]
-DEFAULT_KEYWORDS_TWENTY = ["twenty"]
-DEFAULT_KEYWORDS_TWENTY_FIVE = ["twenty five", "bull", "bullet", "boy"]
-DEFAULT_KEYWORDS_FIFTY = ["fifty", "bullseye"]
 
-FIELD_NAME_MAP = {}
 
+
+LANGUAGE_KEYWORDS = {
+
+    # english
+    1: {
+        "LANGUAGE": "english",
+
+        "NEXT": ["next"],
+        "UNDO": ["undo", "back", "bag"],
+
+        "FIRST_DART": ["first", "for", "prime", "up"],
+        "SECOND_DART": ["second", "middle"],
+        "THIRD_DART": ["third", "thought", "last", "down"],
+
+        "SINGLE": ["single", "singer", "simple"],
+        "DOUBLE": ["double", "stubble", "great", "big"],
+        "TRIPLE": ["triple", "perfect", "tribal", "couple", "templar", "tumbler", "stripper"],
+        
+        "ZERO": ["zero", "miss", "his", "myth"],
+        "ONE": ["one"],
+        "TWO": ["two", "to", "too"],
+        "THREE": ["three", "free"],
+        "FOUR": ["four", "for", "thor"],
+        "FIVE": ["five", "size"],
+        "SIX": ["six"],
+        "SEVEN": ["seven"],
+        "EIGHT": ["eight", "aid"],
+        "NINE": ["nine"],
+        "TEN": ["ten", "turn"],
+        "ELEVEN": ["eleven", "level"],
+        "TWELVE": ["twelve", "twelfth"],
+        "THIRTEEN": ["thirteen", "thirty"],
+        "FOURTEEN": ["fourteen", "fourty"],
+        "FIFTEEN": ["fifteen"],
+        "SIXTEEN": ["sixteen", "sixty"],
+        "SEVENTEEN": ["seventeen", "seventy"],
+        "EIGHTEEN": ["eighteen", "eighty"],
+        "NINETEEN": ["nineteen", "ninety"],
+        "TWENTY": ["twenty"],
+        "TWENTY_FIVE": ["twenty five", "bull", "bullet", "boy"],
+        "FIFTY": ["fifty", "bullseye"]
+    },
+
+    # german
+    2: {
+        "LANGUAGE": "german",
+
+        "NEXT": ["weiter"],
+        "UNDO": ["zurück"],
+
+        "FIRST_DART": ["erster", "erste", "erstens"],
+        "SECOND_DART": ["zweiter", "zweite", "zweitens"],
+        "THIRD_DART": ["dritter", "dritte", "drittens", "britta", "letzter"],
+
+        "SINGLE": ["einfach", "normal", "normale"],
+        "DOUBLE": ["doppel", "doppelt", "groß", "große"],
+        "TRIPLE": ["dreifach", "perfekt", "perfekte"],
+        
+        "ZERO": ["null", "vorbei", "verhauen", "frauen"],
+        "ONE": ["eins"],
+        "TWO": ["zwei"],
+        "THREE": ["drei"],
+        "FOUR": ["vier"],
+        "FIVE": ["fünf"],
+        "SIX": ["sechs"],
+        "SEVEN": ["sieben"],
+        "EIGHT": ["acht"],
+        "NINE": ["neun", "neuen"],
+        "TEN": ["zehn"],
+        "ELEVEN": ["elf"],
+        "TWELVE": ["zwölf"],
+        "THIRTEEN": ["dreizehn"],
+        "FOURTEEN": ["vierzehn"],
+        "FIFTEEN": ["fünfzehn"],
+        "SIXTEEN": ["sechzehn"],
+        "SEVENTEEN": ["siebzehn"],
+        "EIGHTEEN": ["achtzehn", "option"],
+        "NINETEEN": ["neunzehn"],
+        "TWENTY": ["zwanzig"],
+        "TWENTY_FIVE": ["fünfundzwanzig"],
+        "FIFTY": ["fünfzig"]
+    },
+}
 
 
 
@@ -102,62 +159,116 @@ def text2dart_score(text):
         return (None, None)
 
 def text2next(text):
-    return text in KEYWORDS_NEXT
+    return text in NEXT_MAP
 
 def text2undo(text):
-    return text in KEYWORDS_UNDO
+    return text in UNDO_MAP
 
 def init_keywords():
+    global NEXT_MAP
+    global UNDO_MAP
     global THROW_NUMBER_MAP
+    global FIELD_NAME_MAP
 
-    dart_word_map = {
-        1: KEYWORDS_FIRST_DART,
-        2: KEYWORDS_SECOND_DART,
-        3: KEYWORDS_THIRD_DART
-    }
 
-    reverse_mapping = {}
+    if LANGUAGE != 0:
+        pre_def = LANGUAGE_KEYWORDS[LANGUAGE]
+
+        NEXT_MAP = list(set(pre_def["NEXT"] + KEYWORDS_NEXT))
+        UNDO_MAP = list(set(pre_def["UNDO"] + KEYWORDS_UNDO))
+
+        dart_word_map = {
+            1: list(set(pre_def["FIRST_DART"] + KEYWORDS_FIRST_DART)),
+            2: list(set(pre_def["SECOND_DART"] + KEYWORDS_SECOND_DART)),
+            3: list(set(pre_def["THIRD_DART"] + KEYWORDS_THIRD_DART))
+        }
+
+        area_single_word_map = list(set(pre_def["SINGLE"] + KEYWORDS_SINGLE))
+        area_double_word_map = list(set(pre_def["DOUBLE"] + KEYWORDS_DOUBLE))
+        area_triple_word_map = list(set(pre_def["TRIPLE"] + KEYWORDS_TRIPLE))
+
+        number_word_map = {
+            tuple(set(pre_def["ZERO"] + KEYWORDS_ZERO)): "0",
+            tuple(set(pre_def["ONE"] + KEYWORDS_ONE)): "1",
+            tuple(set(pre_def["TWO"] + KEYWORDS_TWO)): "2",
+            tuple(set(pre_def["THREE"] + KEYWORDS_THREE)): "3",
+            tuple(set(pre_def["FOUR"] + KEYWORDS_FOUR)): "4",
+            tuple(set(pre_def["FIVE"] + KEYWORDS_FIVE)): "5",
+            tuple(set(pre_def["SIX"] + KEYWORDS_SIX)): "6",
+            tuple(set(pre_def["SEVEN"] + KEYWORDS_SEVEN)): "7",
+            tuple(set(pre_def["EIGHT"] + KEYWORDS_EIGHT)): "8",
+            tuple(set(pre_def["NINE"] + KEYWORDS_NINE)): "9",
+            tuple(set(pre_def["TEN"] + KEYWORDS_TEN)): "10",
+            tuple(set(pre_def["ELEVEN"] + KEYWORDS_ELEVEN)): "11",
+            tuple(set(pre_def["TWELVE"] + KEYWORDS_TWELVE)): "12",
+            tuple(set(pre_def["THIRTEEN"] + KEYWORDS_THIRTEEN)): "13",
+            tuple(set(pre_def["FOURTEEN"] + KEYWORDS_FOURTEEN)): "14",
+            tuple(set(pre_def["FIFTEEN"] + KEYWORDS_FIFTEEN)): "15",
+            tuple(set(pre_def["SIXTEEN"] + KEYWORDS_SIXTEEN)): "16",
+            tuple(set(pre_def["SEVENTEEN"] + KEYWORDS_SEVENTEEN)): "17",
+            tuple(set(pre_def["EIGHTEEN"] + KEYWORDS_EIGHTEEN)): "18",
+            tuple(set(pre_def["NINETEEN"] + KEYWORDS_NINETEEN)): "19",
+            tuple(set(pre_def["TWENTY"] + KEYWORDS_TWENTY)): "20",
+            tuple(set(pre_def["TWENTY_FIVE"] + KEYWORDS_TWENTY_FIVE)): "25",
+            tuple(set(pre_def["FIFTY"] + KEYWORDS_FIFTY)): "50",
+        }
+      
+    else:
+
+        NEXT_MAP = list(set(KEYWORDS_NEXT))
+        UNDO_MAP = list(set(KEYWORDS_UNDO))
+
+        dart_word_map = {
+            1: list(set(KEYWORDS_FIRST_DART)),
+            2: list(set(KEYWORDS_SECOND_DART)),
+            3: list(set(KEYWORDS_THIRD_DART))
+        }
+
+        area_single_word_map = list(set(KEYWORDS_SINGLE))
+        area_double_word_map = list(set(KEYWORDS_DOUBLE))
+        area_triple_word_map = list(set(KEYWORDS_TRIPLE))
+
+        number_word_map = {
+            tuple(set(KEYWORDS_ZERO)): "0",
+            tuple(set(KEYWORDS_ONE)): "1",
+            tuple(set(KEYWORDS_TWO)): "2",
+            tuple(set(KEYWORDS_THREE)): "3",
+            tuple(set(KEYWORDS_FOUR)): "4",
+            tuple(set(KEYWORDS_FIVE)): "5",
+            tuple(set(KEYWORDS_SIX)): "6",
+            tuple(set(KEYWORDS_SEVEN)): "7",
+            tuple(set(KEYWORDS_EIGHT)): "8",
+            tuple(set(KEYWORDS_NINE)): "9",
+            tuple(set(KEYWORDS_TEN)): "10",
+            tuple(set(KEYWORDS_ELEVEN)): "11",
+            tuple(set(KEYWORDS_TWELVE)): "12",
+            tuple(set(KEYWORDS_THIRTEEN)): "13",
+            tuple(set(KEYWORDS_FOURTEEN)): "14",
+            tuple(set(KEYWORDS_FIFTEEN)): "15",
+            tuple(set(KEYWORDS_SIXTEEN)): "16",
+            tuple(set(KEYWORDS_SEVENTEEN)): "17",
+            tuple(set(KEYWORDS_EIGHTEEN)): "18",
+            tuple(set(KEYWORDS_NINETEEN)): "19",
+            tuple(set(KEYWORDS_TWENTY)): "20",
+            tuple(set(KEYWORDS_TWENTY_FIVE)): "25",
+            tuple(set(KEYWORDS_FIFTY)): "50",
+        }
+
+
     for k, values in dart_word_map.items():
         for v in values:
-            reverse_mapping[v] = k
-    THROW_NUMBER_MAP = reverse_mapping
+            THROW_NUMBER_MAP[v] = k
     # ppi(f'THROW_NUMBER_MAP: {THROW_NUMBER_MAP}')
 
     
-    number_word_map = {
-        tuple(KEYWORDS_ZERO): "0",
-        tuple(KEYWORDS_ONE): "1",
-        tuple(KEYWORDS_TWO): "2",
-        tuple(KEYWORDS_THREE): "3",
-        tuple(KEYWORDS_FOUR): "4",
-        tuple(KEYWORDS_FIVE): "5",
-        tuple(KEYWORDS_SIX): "6",
-        tuple(KEYWORDS_SEVEN): "7",
-        tuple(KEYWORDS_EIGHT): "8",
-        tuple(KEYWORDS_NINE): "9",
-        tuple(KEYWORDS_TEN): "10",
-        tuple(KEYWORDS_ELEVEN): "11",
-        tuple(KEYWORDS_TWELVE): "12",
-        tuple(KEYWORDS_THIRTEEN): "13",
-        tuple(KEYWORDS_FOURTEEN): "14",
-        tuple(KEYWORDS_FIFTEEN): "15",
-        tuple(KEYWORDS_SIXTEEN): "16",
-        tuple(KEYWORDS_SEVENTEEN): "17",
-        tuple(KEYWORDS_EIGHTEEN): "18",
-        tuple(KEYWORDS_NINETEEN): "19",
-        tuple(KEYWORDS_TWENTY): "20",
-        tuple(KEYWORDS_TWENTY_FIVE): "25",
-        tuple(KEYWORDS_FIFTY): "50",
-    }
-
     for words, number in number_word_map.items():
         for word in words:
             if number not in ["0", "25", "50"]:
-                for kd in KEYWORDS_DOUBLE:
+                for kd in area_double_word_map:
                     FIELD_NAME_MAP[kd + " " + word] = "D" + number
-                for kt in KEYWORDS_TRIPLE:
+                for kt in area_triple_word_map:
                     FIELD_NAME_MAP[kt + " " + word] = "T" + number
-                for ks in KEYWORDS_SINGLE: 
+                for ks in area_single_word_map: 
                     FIELD_NAME_MAP[ks + " " + word] = "S" + number
                 FIELD_NAME_MAP[word] = "S" + number
             else:
@@ -193,7 +304,7 @@ def start_voice_recognition():
             global WS_DATA_FEEDER
 
             # lang="en-us"
-            # vosk-model-en-us-daanzu-20200905
+            # model_name="vosk-model-en-us-daanzu-20200905"
             model = Model(model_path=str(MODEL_PATH))
             rec = KaldiRecognizer(model, samplerate)
         
@@ -288,37 +399,38 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("-CON", "--connection", default="127.0.0.1:8079", required=False, help="Connection to data feeder")
     ap.add_argument("-MP", "--model_path", required=True, help="Absolute path to your model folder")
-    ap.add_argument("-KN", "--keywords_next", required=False, default=DEFAULT_KEYWORDS_NEXT, nargs='+', help="keywords for command 'next'")
-    ap.add_argument("-KU", "--keywords_undo", required=False, default=DEFAULT_KEYWORDS_UNDO, nargs='+', help="keywords for command 'undo'")       
-    ap.add_argument("-KFD", "--keywords_first_dart", required=False, default=DEFAULT_KEYWORDS_FIRST_DART, nargs='+', help="keywords for command 'dart-correction'")  
-    ap.add_argument("-KSD", "--keywords_second_dart", required=False, default=DEFAULT_KEYWORDS_SECOND_DART, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KTD", "--keywords_third_dart", required=False, default=DEFAULT_KEYWORDS_THIRD_DART, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KS", "--keywords_single", required=False, default=DEFAULT_KEYWORDS_SINGLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KD", "--keywords_double", required=False, default=DEFAULT_KEYWORDS_DOUBLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KT", "--keywords_triple", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KZERO", "--keywords_zero", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KONE", "--keywords_one", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KTWO", "--keywords_two", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KTHREE", "--keywords_three", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KFOUR", "--keywords_four", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KFIVE", "--keywords_five", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KSIX", "--keywords_six", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KSEVEN", "--keywords_seven", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KEIGHT", "--keywords_eight", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KNINE", "--keywords_nine", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KTEN", "--keywords_ten", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KELEVEN", "--keywords_eleven", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KTWELVE", "--keywords_twelve", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KTHIRTEEN", "--keywords_thirteen", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KFOURTEEN", "--keywords_fourteen", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KFIFTEEN", "--keywords_fifteen", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KSIXTEEN", "--keywords_sixteen", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KSEVENTEEN", "--keywords_seventeen", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KEIGHTEEN", "--keywords_eighteen", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KNINETEEN", "--keywords_nineteen", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KTWENTY", "--keywords_twenty", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KTWENTYFIVE", "--keywords_twenty_five", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
-    ap.add_argument("-KFIFTY", "--keywords_fifty", required=False, default=DEFAULT_KEYWORDS_TRIPLE, nargs='+', help="keywords for command 'dart-correction'")
+    ap.add_argument("-L", "--language", required=False, default=1, type=int, choices=range(0, len(LANGUAGE_KEYWORDS) + 1), help="Predefined language keywords")
+    ap.add_argument("-KN", "--keywords_next", required=False, default=[], nargs='+', help="Keywords for command 'next'")
+    ap.add_argument("-KU", "--keywords_undo", required=False, default=[], nargs='+', help="Keywords for command 'undo'")       
+    ap.add_argument("-KFD", "--keywords_first_dart", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")  
+    ap.add_argument("-KSD", "--keywords_second_dart", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KTD", "--keywords_third_dart", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KS", "--keywords_single", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KD", "--keywords_double", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KT", "--keywords_triple", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KZERO", "--keywords_zero", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KONE", "--keywords_one", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KTWO", "--keywords_two", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KTHREE", "--keywords_three", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KFOUR", "--keywords_four", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KFIVE", "--keywords_five", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KSIX", "--keywords_six", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KSEVEN", "--keywords_seven", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KEIGHT", "--keywords_eight", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KNINE", "--keywords_nine", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KTEN", "--keywords_ten", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KELEVEN", "--keywords_eleven", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KTWELVE", "--keywords_twelve", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KTHIRTEEN", "--keywords_thirteen", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KFOURTEEN", "--keywords_fourteen", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KFIFTEEN", "--keywords_fifteen", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KSIXTEEN", "--keywords_sixteen", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KSEVENTEEN", "--keywords_seventeen", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KEIGHTEEN", "--keywords_eighteen", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KNINETEEN", "--keywords_nineteen", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KTWENTY", "--keywords_twenty", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KTWENTYFIVE", "--keywords_twenty_five", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
+    ap.add_argument("-KFIFTY", "--keywords_fifty", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
     ap.add_argument("-DEB", "--debug", type=int, choices=range(0, 2), default=False, required=False, help="If '1', the application will output additional information")
 
     args = vars(ap.parse_args())
@@ -327,6 +439,7 @@ if __name__ == "__main__":
     DEBUG = args['debug']
     CON = args['connection']
     MODEL_PATH = Path(args['model_path'])
+    LANGUAGE = args['language']
     KEYWORDS_NEXT = args['keywords_next']
     KEYWORDS_UNDO = args['keywords_undo']
     KEYWORDS_FIRST_DART = args['keywords_first_dart']
@@ -359,6 +472,7 @@ if __name__ == "__main__":
     KEYWORDS_TWENTY_FIVE = args["keywords_twenty_five"]
     KEYWORDS_FIFTY = args["keywords_fifty"]
 
+
     if DEBUG:
         ppi('Started with following arguments:')
         ppi(json.dumps(args, indent=4))
@@ -375,8 +489,19 @@ if __name__ == "__main__":
     global WS_DATA_FEEDER
     WS_DATA_FEEDER = None
 
+    global NEXT_MAP
+    NEXT_MAP = []
+
+    global UNDO_MAP
+    UNDO_MAP = []
+
     global THROW_NUMBER_MAP
-    THROW_NUMBER_MAP = None
+    THROW_NUMBER_MAP = {}
+
+    global FIELD_NAME_MAP
+    FIELD_NAME_MAP = {}
+
+
 
 
 
