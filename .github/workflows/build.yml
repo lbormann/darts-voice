@@ -64,7 +64,7 @@ jobs:
         python-version: 3.8
 
     - name: Install system dependencies
-      run: apt-get install -y portaudio19-dev
+      run: sudo apt-get install -y portaudio19-dev
 
     - name: Install dependencies
       run: |
