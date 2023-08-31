@@ -40,13 +40,13 @@ jobs:
         include:
           - os: macos-latest
             TARGET: macos
-            CMD_BUILD: pyinstaller -F -n autodarts-voice-mac -i resources/autodarts-voice.icns autodarts-voice.py 
+            CMD_BUILD: pyinstaller -F -n autodarts-voice-mac -i resources/autodarts-voice.icns --noconsole --onefile --collect-all vosk autodarts-voice.py 
             OUT_FILE_NAME: autodarts-voice-mac
             ASSET_MIME: application/zip
 
           - os: ubuntu-20.04
             TARGET: ubuntu
-            CMD_BUILD: pyinstaller -F -n autodarts-voice -i resources/autodarts-voice.svg autodarts-voice.py
+            CMD_BUILD: pyinstaller -F -n autodarts-voice -i resources/autodarts-voice.svg --noconsole --onefile --collect-all vosk autodarts-voice.py
             OUT_FILE_NAME: autodarts-voice
             ASSET_MIME: application/octet-stream
 
