@@ -68,6 +68,7 @@ jobs:
       run: |
         if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
           # macOS specific commands here
+          brew install portaudio
           echo "Installing dependencies for macOS..."
 
         elif [[ "${{ matrix.os }}" == *"ubuntu"* ]]; then
