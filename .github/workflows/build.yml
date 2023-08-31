@@ -64,7 +64,12 @@ jobs:
         python-version: 3.8
 
     - name: Install system dependencies
-      run: sudo apt-get install -y portaudio19-dev
+      run: |
+        if [ "${{ matrix.os }}" = "macos-latest" ]; then
+          brew install portaudio
+        elif [[ "${{ matrix.os }}" != "windows-latest" ]]; then
+          sudo apt-get install -y portaudio19-dev
+        fi
 
     - name: Install dependencies
       run: |
