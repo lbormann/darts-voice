@@ -52,7 +52,7 @@ jobs:
 
           - os: windows-latest
             TARGET: windows
-            CMD_BUILD: pyinstaller -F -n autodarts-voice -i resources/autodarts-voice.ico autodarts-voice.py
+            CMD_BUILD: pyinstaller -F -n autodarts-voice -i resources/autodarts-voice.ico --noconsole --onefile --collect-all vosk autodarts-voice.py
             OUT_FILE_NAME: autodarts-voice.exe
             ASSET_MIME: application/vnd.microsoft.portable-executable
     steps:
