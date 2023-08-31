@@ -64,11 +64,24 @@ jobs:
         python-version: 3.8
 
     - name: Install system dependencies
+      shell: bash
       run: |
-        if [ "${{ matrix.os }}" = "macos-latest" ]; then
-          brew install portaudio
-        elif [[ "${{ matrix.os }}" != "windows-latest" ]]; then
+        if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+          # macOS specific commands here
+          echo "Installing dependencies for macOS..."
+
+        elif [[ "${{ matrix.os }}" == *"ubuntu"* ]]; then
+          # Ubuntu (all versions) specific commands
           sudo apt-get install -y portaudio19-dev
+          echo "Installing dependencies for Ubuntu..."
+
+        elif [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+          # Windows specific commands (if any)
+          echo "Installing dependencies for Windows..."
+          
+        else
+          # Optional: for any other OS or default actions
+          echo "OS not recognized!"
         fi
 
     - name: Install dependencies
