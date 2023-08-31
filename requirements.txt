@@ -1,0 +1,5 @@
+pyinstaller
+websocket-client==1.5.1
+pyaudio==0.2.12
+vosk==0.3.45
+sounddevice==0.4.6
