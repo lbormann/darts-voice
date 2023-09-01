@@ -91,13 +91,16 @@ Here are some examples that could work out of the box with model [vosk-model-sma
 - first is fifty
 - last is miss
 
-#### Go next turn
-
-- next
 
 #### Go next game
 
 - next game
+
+
+#### Go next
+
+- next
+
 
 #### Go back
 
