@@ -80,25 +80,29 @@ Here are some examples that could work out of the box with model [vosk-model-sma
 
 #### Dart-correction
 
-- First twenty
-- First is twenty
-- Second triple twelve
-- Third one
-- Last double ten
-- Second is two
-- Last is number three
-- Second is twenty five
-- First is fifty
-- Last is miss
+- first twenty
+- first is twenty
+- second triple twelve
+- third one
+- last double ten
+- second is two
+- last is number three
+- second is twenty five
+- first is fifty
+- last is miss
 
-#### Go next
+#### Go next turn
 
-- Next
+- next
+
+#### Go next game
+
+- next game
 
 #### Go back
 
-- Back
-- Undo
+- back
+- undo
 
 
  
@@ -106,6 +110,7 @@ Here are some examples that could work out of the box with model [vosk-model-sma
 
 - -MP / --model_path [REQUIRED] [Default: '']
 - -L / --language [OPTIONAL] [Default: 1] [Possible values: 0 (no keyword-predefinitions) | 1 (english) | 2 (german)]
+- -KNG / --keywords_next_game [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
 - -KN / --keywords_next [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
 - -KU / --keywords_undo [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
 - -KFD / --keywords_first_dart [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
@@ -167,6 +172,7 @@ _ _ _ _ _ _ _ _ _ _
 
 ### English
 
+    "NEXT_GAME": ["next game"],
     "NEXT": ["next"],
     "UNDO": ["undo", "back", "bag"],
 
@@ -204,6 +210,7 @@ _ _ _ _ _ _ _ _ _ _
 
 ### German
 
+    "NEXT_GAME": ["nächstes spiel", "nächste spiel"],
     "NEXT": ["weiter"],
     "UNDO": ["zurück"],
 

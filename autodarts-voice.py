@@ -31,7 +31,7 @@ main_directory = os.path.dirname(os.path.realpath(__file__))
 
 
 
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 
 
 
@@ -42,6 +42,7 @@ LANGUAGE_KEYWORDS = {
     1: {
         "LANGUAGE": "english",
 
+        "NEXT_GAME": ["next game"],
         "NEXT": ["next"],
         "UNDO": ["undo", "back", "bag"],
 
@@ -82,6 +83,7 @@ LANGUAGE_KEYWORDS = {
     2: {
         "LANGUAGE": "german",
 
+        "NEXT_GAME": ["nächstes spiel", "nächste spiel"],
         "NEXT": ["weiter"],
         "UNDO": ["zurück"],
 
@@ -158,6 +160,9 @@ def text2dart_score(text):
         ppe("Text2dart failed: ", e)
         return (None, None)
 
+def text2nextgame(text):
+    return text in NEXT_GAME_MAP
+
 def text2next(text):
     return text in NEXT_MAP
 
@@ -166,6 +171,7 @@ def text2undo(text):
 
 def init_keywords():
     global NEXT_MAP
+    global NEXT_GAME_MAP
     global UNDO_MAP
     global THROW_NUMBER_MAP
     global FIELD_NAME_MAP
@@ -174,84 +180,86 @@ def init_keywords():
     if LANGUAGE != 0:
         pre_def = LANGUAGE_KEYWORDS[LANGUAGE]
 
-        NEXT_MAP = list(set(pre_def["NEXT"] + KEYWORDS_NEXT))
-        UNDO_MAP = list(set(pre_def["UNDO"] + KEYWORDS_UNDO))
+        NEXT_MAP = list(set(pre_def["NEXT"] + [s.lower() for s in KEYWORDS_NEXT]))
+        NEXT_GAME_MAP = list(set(pre_def["NEXT_GAME"] + [s.lower() for s in KEYWORDS_NEXT_GAME]))
+        UNDO_MAP = list(set(pre_def["UNDO"] + [s.lower() for s in KEYWORDS_UNDO]))
 
         dart_word_map = {
-            1: list(set(pre_def["FIRST_DART"] + KEYWORDS_FIRST_DART)),
-            2: list(set(pre_def["SECOND_DART"] + KEYWORDS_SECOND_DART)),
-            3: list(set(pre_def["THIRD_DART"] + KEYWORDS_THIRD_DART))
+            1: list(set(pre_def["FIRST_DART"] + [s.lower() for s in KEYWORDS_FIRST_DART])),
+            2: list(set(pre_def["SECOND_DART"] + [s.lower() for s in KEYWORDS_SECOND_DART])),
+            3: list(set(pre_def["THIRD_DART"] + [s.lower() for s in KEYWORDS_THIRD_DART]))
         }
 
-        area_single_word_map = list(set(pre_def["SINGLE"] + KEYWORDS_SINGLE))
-        area_double_word_map = list(set(pre_def["DOUBLE"] + KEYWORDS_DOUBLE))
-        area_triple_word_map = list(set(pre_def["TRIPLE"] + KEYWORDS_TRIPLE))
+        area_single_word_map = list(set(pre_def["SINGLE"] + [s.lower() for s in KEYWORDS_SINGLE]))
+        area_double_word_map = list(set(pre_def["DOUBLE"] + [s.lower() for s in KEYWORDS_DOUBLE]))
+        area_triple_word_map = list(set(pre_def["TRIPLE"] + [s.lower() for s in KEYWORDS_TRIPLE]))
 
         number_word_map = {
-            tuple(set(pre_def["ZERO"] + KEYWORDS_ZERO)): "0",
-            tuple(set(pre_def["ONE"] + KEYWORDS_ONE)): "1",
-            tuple(set(pre_def["TWO"] + KEYWORDS_TWO)): "2",
-            tuple(set(pre_def["THREE"] + KEYWORDS_THREE)): "3",
-            tuple(set(pre_def["FOUR"] + KEYWORDS_FOUR)): "4",
-            tuple(set(pre_def["FIVE"] + KEYWORDS_FIVE)): "5",
-            tuple(set(pre_def["SIX"] + KEYWORDS_SIX)): "6",
-            tuple(set(pre_def["SEVEN"] + KEYWORDS_SEVEN)): "7",
-            tuple(set(pre_def["EIGHT"] + KEYWORDS_EIGHT)): "8",
-            tuple(set(pre_def["NINE"] + KEYWORDS_NINE)): "9",
-            tuple(set(pre_def["TEN"] + KEYWORDS_TEN)): "10",
-            tuple(set(pre_def["ELEVEN"] + KEYWORDS_ELEVEN)): "11",
-            tuple(set(pre_def["TWELVE"] + KEYWORDS_TWELVE)): "12",
-            tuple(set(pre_def["THIRTEEN"] + KEYWORDS_THIRTEEN)): "13",
-            tuple(set(pre_def["FOURTEEN"] + KEYWORDS_FOURTEEN)): "14",
-            tuple(set(pre_def["FIFTEEN"] + KEYWORDS_FIFTEEN)): "15",
-            tuple(set(pre_def["SIXTEEN"] + KEYWORDS_SIXTEEN)): "16",
-            tuple(set(pre_def["SEVENTEEN"] + KEYWORDS_SEVENTEEN)): "17",
-            tuple(set(pre_def["EIGHTEEN"] + KEYWORDS_EIGHTEEN)): "18",
-            tuple(set(pre_def["NINETEEN"] + KEYWORDS_NINETEEN)): "19",
-            tuple(set(pre_def["TWENTY"] + KEYWORDS_TWENTY)): "20",
-            tuple(set(pre_def["TWENTY_FIVE"] + KEYWORDS_TWENTY_FIVE)): "25",
-            tuple(set(pre_def["FIFTY"] + KEYWORDS_FIFTY)): "50",
+            tuple(set(pre_def["ZERO"] + [s.lower() for s in KEYWORDS_ZERO])): "0",
+            tuple(set(pre_def["ONE"] + [s.lower() for s in KEYWORDS_ONE])): "1",
+            tuple(set(pre_def["TWO"] + [s.lower() for s in KEYWORDS_TWO])): "2",
+            tuple(set(pre_def["THREE"] + [s.lower() for s in KEYWORDS_THREE])): "3",
+            tuple(set(pre_def["FOUR"] + [s.lower() for s in KEYWORDS_FOUR])): "4",
+            tuple(set(pre_def["FIVE"] + [s.lower() for s in KEYWORDS_FIVE])): "5",
+            tuple(set(pre_def["SIX"] + [s.lower() for s in KEYWORDS_SIX])): "6",
+            tuple(set(pre_def["SEVEN"] + [s.lower() for s in KEYWORDS_SEVEN])): "7",
+            tuple(set(pre_def["EIGHT"] + [s.lower() for s in KEYWORDS_EIGHT])): "8",
+            tuple(set(pre_def["NINE"] + [s.lower() for s in KEYWORDS_NINE])): "9",
+            tuple(set(pre_def["TEN"] + [s.lower() for s in KEYWORDS_TEN])): "10",
+            tuple(set(pre_def["ELEVEN"] + [s.lower() for s in KEYWORDS_ELEVEN])): "11",
+            tuple(set(pre_def["TWELVE"] + [s.lower() for s in KEYWORDS_TWELVE])): "12",
+            tuple(set(pre_def["THIRTEEN"] + [s.lower() for s in KEYWORDS_THIRTEEN])): "13",
+            tuple(set(pre_def["FOURTEEN"] + [s.lower() for s in KEYWORDS_FOURTEEN])): "14",
+            tuple(set(pre_def["FIFTEEN"] + [s.lower() for s in KEYWORDS_FIFTEEN])): "15",
+            tuple(set(pre_def["SIXTEEN"] + [s.lower() for s in KEYWORDS_SIXTEEN])): "16",
+            tuple(set(pre_def["SEVENTEEN"] + [s.lower() for s in KEYWORDS_SEVENTEEN])): "17",
+            tuple(set(pre_def["EIGHTEEN"] + [s.lower() for s in KEYWORDS_EIGHTEEN])): "18",
+            tuple(set(pre_def["NINETEEN"] + [s.lower() for s in KEYWORDS_NINETEEN])): "19",
+            tuple(set(pre_def["TWENTY"] + [s.lower() for s in KEYWORDS_TWENTY])): "20",
+            tuple(set(pre_def["TWENTY_FIVE"] + [s.lower() for s in KEYWORDS_TWENTY_FIVE])): "25",
+            tuple(set(pre_def["FIFTY"] + [s.lower() for s in KEYWORDS_FIFTY])): "50",
         }
       
     else:
 
-        NEXT_MAP = list(set(KEYWORDS_NEXT))
-        UNDO_MAP = list(set(KEYWORDS_UNDO))
+        NEXT_MAP = list(set([s.lower() for s in KEYWORDS_NEXT]))
+        NEXT_GAME_MAP = list(set([s.lower() for s in KEYWORDS_NEXT_GAME]))
+        UNDO_MAP = list(set([s.lower() for s in KEYWORDS_UNDO]))
 
         dart_word_map = {
-            1: list(set(KEYWORDS_FIRST_DART)),
-            2: list(set(KEYWORDS_SECOND_DART)),
-            3: list(set(KEYWORDS_THIRD_DART))
+            1: list(set([s.lower() for s in KEYWORDS_FIRST_DART])),
+            2: list(set([s.lower() for s in KEYWORDS_SECOND_DART])),
+            3: list(set([s.lower() for s in KEYWORDS_THIRD_DART]))
         }
 
-        area_single_word_map = list(set(KEYWORDS_SINGLE))
-        area_double_word_map = list(set(KEYWORDS_DOUBLE))
-        area_triple_word_map = list(set(KEYWORDS_TRIPLE))
+        area_single_word_map = list(set([s.lower() for s in KEYWORDS_SINGLE]))
+        area_double_word_map = list(set([s.lower() for s in KEYWORDS_DOUBLE]))
+        area_triple_word_map = list(set([s.lower() for s in KEYWORDS_TRIPLE]))
 
         number_word_map = {
-            tuple(set(KEYWORDS_ZERO)): "0",
-            tuple(set(KEYWORDS_ONE)): "1",
-            tuple(set(KEYWORDS_TWO)): "2",
-            tuple(set(KEYWORDS_THREE)): "3",
-            tuple(set(KEYWORDS_FOUR)): "4",
-            tuple(set(KEYWORDS_FIVE)): "5",
-            tuple(set(KEYWORDS_SIX)): "6",
-            tuple(set(KEYWORDS_SEVEN)): "7",
-            tuple(set(KEYWORDS_EIGHT)): "8",
-            tuple(set(KEYWORDS_NINE)): "9",
-            tuple(set(KEYWORDS_TEN)): "10",
-            tuple(set(KEYWORDS_ELEVEN)): "11",
-            tuple(set(KEYWORDS_TWELVE)): "12",
-            tuple(set(KEYWORDS_THIRTEEN)): "13",
-            tuple(set(KEYWORDS_FOURTEEN)): "14",
-            tuple(set(KEYWORDS_FIFTEEN)): "15",
-            tuple(set(KEYWORDS_SIXTEEN)): "16",
-            tuple(set(KEYWORDS_SEVENTEEN)): "17",
-            tuple(set(KEYWORDS_EIGHTEEN)): "18",
-            tuple(set(KEYWORDS_NINETEEN)): "19",
-            tuple(set(KEYWORDS_TWENTY)): "20",
-            tuple(set(KEYWORDS_TWENTY_FIVE)): "25",
-            tuple(set(KEYWORDS_FIFTY)): "50",
+            tuple(set([s.lower() for s in KEYWORDS_ZERO])): "0",
+            tuple(set([s.lower() for s in KEYWORDS_ONE])): "1",
+            tuple(set([s.lower() for s in KEYWORDS_TWO])): "2",
+            tuple(set([s.lower() for s in KEYWORDS_THREE])): "3",
+            tuple(set([s.lower() for s in KEYWORDS_FOUR])): "4",
+            tuple(set([s.lower() for s in KEYWORDS_FIVE])): "5",
+            tuple(set([s.lower() for s in KEYWORDS_SIX])): "6",
+            tuple(set([s.lower() for s in KEYWORDS_SEVEN])): "7",
+            tuple(set([s.lower() for s in KEYWORDS_EIGHT])): "8",
+            tuple(set([s.lower() for s in KEYWORDS_NINE])): "9",
+            tuple(set([s.lower() for s in KEYWORDS_TEN])): "10",
+            tuple(set([s.lower() for s in KEYWORDS_ELEVEN])): "11",
+            tuple(set([s.lower() for s in KEYWORDS_TWELVE])): "12",
+            tuple(set([s.lower() for s in KEYWORDS_THIRTEEN])): "13",
+            tuple(set([s.lower() for s in KEYWORDS_FOURTEEN])): "14",
+            tuple(set([s.lower() for s in KEYWORDS_FIFTEEN])): "15",
+            tuple(set([s.lower() for s in KEYWORDS_SIXTEEN])): "16",
+            tuple(set([s.lower() for s in KEYWORDS_SEVENTEEN])): "17",
+            tuple(set([s.lower() for s in KEYWORDS_EIGHTEEN])): "18",
+            tuple(set([s.lower() for s in KEYWORDS_NINETEEN])): "19",
+            tuple(set([s.lower() for s in KEYWORDS_TWENTY])): "20",
+            tuple(set([s.lower() for s in KEYWORDS_TWENTY_FIVE])): "25",
+            tuple(set([s.lower() for s in KEYWORDS_FIFTY])): "50",
         }
 
 
@@ -259,8 +267,7 @@ def init_keywords():
         for v in values:
             THROW_NUMBER_MAP[v] = k
     # ppi(f'THROW_NUMBER_MAP: {THROW_NUMBER_MAP}')
-
-    
+ 
     for words, number in number_word_map.items():
         for word in words:
             if number not in ["0", "25", "50"]:
@@ -322,6 +329,14 @@ def start_voice_recognition():
                             stt_result = json.loads(stt_result)
                             stt_result = stt_result['text']
                             if stt_result != '':
+                                stt_result = stt_result.lower()
+
+                                if text2nextgame(stt_result):
+                                    ppi(f"Command 'NEXT-GAME'")
+                                    if WS_DATA_FEEDER is not None:
+                                        WS_DATA_FEEDER.send('next-game')
+                                    continue
+
                                 if text2next(stt_result):
                                     ppi(f"Command 'NEXT'")
                                     if WS_DATA_FEEDER is not None:
@@ -400,6 +415,7 @@ if __name__ == "__main__":
     ap.add_argument("-CON", "--connection", default="127.0.0.1:8079", required=False, help="Connection to data feeder")
     ap.add_argument("-MP", "--model_path", required=True, help="Absolute path to your model folder")
     ap.add_argument("-L", "--language", required=False, default=1, type=int, choices=range(0, len(LANGUAGE_KEYWORDS) + 1), help="Predefined language keywords")
+    ap.add_argument("-KNG", "--keywords_next_game", required=False, default=[], nargs='+', help="Keywords for command 'next-game'")
     ap.add_argument("-KN", "--keywords_next", required=False, default=[], nargs='+', help="Keywords for command 'next'")
     ap.add_argument("-KU", "--keywords_undo", required=False, default=[], nargs='+', help="Keywords for command 'undo'")       
     ap.add_argument("-KFD", "--keywords_first_dart", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")  
@@ -440,6 +456,7 @@ if __name__ == "__main__":
     CON = args['connection']
     MODEL_PATH = Path(args['model_path'])
     LANGUAGE = args['language']
+    KEYWORDS_NEXT_GAME = args['keywords_next_game']
     KEYWORDS_NEXT = args['keywords_next']
     KEYWORDS_UNDO = args['keywords_undo']
     KEYWORDS_FIRST_DART = args['keywords_first_dart']
@@ -491,6 +508,9 @@ if __name__ == "__main__":
 
     global NEXT_MAP
     NEXT_MAP = []
+
+    global NEXT_GAME_MAP
+    NEXT_GAME_MAP = []
 
     global UNDO_MAP
     UNDO_MAP = []
