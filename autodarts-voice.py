@@ -155,7 +155,7 @@ def text2dart_score(text):
         return (throw_number, field_name)
 
     except Exception as e:
-        print(e)
+        ppe("Text2dart failed: ", e)
         return (None, None)
 
 def text2next(text):

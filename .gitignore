@@ -2,4 +2,3 @@ start-custom*.bat
 build
 dist
 *.spec
-stt-models
