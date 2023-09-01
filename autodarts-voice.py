@@ -53,7 +53,7 @@ LANGUAGE_KEYWORDS = {
         "DOUBLE": ["double", "stubble", "great", "big"],
         "TRIPLE": ["triple", "perfect", "tribal", "couple", "templar", "tumbler", "stripper"],
         
-        "ZERO": ["zero", "miss", "his", "myth"],
+        "ZERO": ["zero", "miss", "his", "myth", "missed"],
         "ONE": ["one"],
         "TWO": ["two", "to", "too"],
         "THREE": ["three", "free"],

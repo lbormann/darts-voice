@@ -1,7 +1,7 @@
 # AUTODARTS-VOICE
 [![Downloads](https://img.shields.io/github/downloads/lbormann/autodarts-voice/total.svg)](https://github.com/lbormann/autodarts-voice/releases/latest)
 
-Autodarts-voice transcribes voice in realtime (offline) to control an autodarts-game. A running instance of https://github.com/lbormann/autodarts-caller is needed for processing commands.
+Autodarts-voice transcribes your voice in realtime (offline) to control an autodarts-game. A running instance of https://github.com/lbormann/autodarts-caller is needed for processing commands.
 Autodarts-voice uses vosk. check it out: https://alphacephei.com/vosk
 
 
@@ -32,6 +32,10 @@ Autodarts-voice uses vosk. check it out: https://alphacephei.com/vosk
 Go to download-directory and type:
 
     pip3 install -r requirements.txt
+
+On MacOS:
+
+    pip3 install -r requirements_mac.txt
 
 
 
@@ -85,6 +89,7 @@ Here are some examples that could work out of the box with model [vosk-model-sma
 - Last is number three
 - Second is twenty five
 - First is fifty
+- Last is miss
 
 #### Go next
 
@@ -100,7 +105,7 @@ Here are some examples that could work out of the box with model [vosk-model-sma
 ### Arguments
 
 - -MP / --model_path [REQUIRED] [Default: '']
-- -L / --language [OPTIONAL] [Default: 1] [Possible values: 0 (no predefinitions) | 1 (english) | 2 (german)]
+- -L / --language [OPTIONAL] [Default: 1] [Possible values: 0 (no keyword-predefinitions) | 1 (english) | 2 (german)]
 - -KN / --keywords_next [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
 - -KU / --keywords_undo [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
 - -KFD / --keywords_first_dart [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
@@ -144,7 +149,7 @@ You need to set an absolute path to your model directory. Moreover make sure the
 
 *`-L / --language`*
 
-Language defines which predefined keywords should be used.
+Language defines which [predefined keywords](#Languages) should be used.
 
 
 *`-K* / --keywords_*`*
@@ -156,7 +161,83 @@ For every argument starting with 'K'/'keywords' you can set multiple values that
 _ _ _ _ _ _ _ _ _ _
 
 
+## Languages
 
+(Predefined keywords)
+
+### English
+
+    "NEXT": ["next"],
+    "UNDO": ["undo", "back", "bag"],
+
+    "FIRST_DART": ["first", "for", "prime", "up"],
+    "SECOND_DART": ["second", "middle"],
+    "THIRD_DART": ["third", "thought", "last", "down"],
+
+    "SINGLE": ["single", "singer", "simple"],
+    "DOUBLE": ["double", "stubble", "great", "big"],
+    "TRIPLE": ["triple", "perfect", "tribal", "couple", "templar", "tumbler", "stripper"],
+    
+    "ZERO": ["zero", "miss", "his", "myth", "missed"],
+    "ONE": ["one"],
+    "TWO": ["two", "to", "too"],
+    "THREE": ["three", "free"],
+    "FOUR": ["four", "for", "thor"],
+    "FIVE": ["five", "size"],
+    "SIX": ["six"],
+    "SEVEN": ["seven"],
+    "EIGHT": ["eight", "aid"],
+    "NINE": ["nine"],
+    "TEN": ["ten", "turn"],
+    "ELEVEN": ["eleven", "level"],
+    "TWELVE": ["twelve", "twelfth"],
+    "THIRTEEN": ["thirteen", "thirty"],
+    "FOURTEEN": ["fourteen", "fourty"],
+    "FIFTEEN": ["fifteen"],
+    "SIXTEEN": ["sixteen", "sixty"],
+    "SEVENTEEN": ["seventeen", "seventy"],
+    "EIGHTEEN": ["eighteen", "eighty"],
+    "NINETEEN": ["nineteen", "ninety"],
+    "TWENTY": ["twenty"],
+    "TWENTY_FIVE": ["twenty five", "bull", "bullet", "boy"],
+    "FIFTY": ["fifty", "bullseye"]
+
+### German
+
+    "NEXT": ["weiter"],
+    "UNDO": ["zurück"],
+
+    "FIRST_DART": ["erster", "erste", "erstens"],
+    "SECOND_DART": ["zweiter", "zweite", "zweitens"],
+    "THIRD_DART": ["dritter", "dritte", "drittens", "britta", "letzter"],
+
+    "SINGLE": ["einfach", "normal", "normale"],
+    "DOUBLE": ["doppel", "doppelt", "groß", "große"],
+    "TRIPLE": ["dreifach", "perfekt", "perfekte"],
+    
+    "ZERO": ["null", "vorbei", "verhauen", "frauen"],
+    "ONE": ["eins"],
+    "TWO": ["zwei"],
+    "THREE": ["drei"],
+    "FOUR": ["vier"],
+    "FIVE": ["fünf"],
+    "SIX": ["sechs"],
+    "SEVEN": ["sieben"],
+    "EIGHT": ["acht"],
+    "NINE": ["neun", "neuen"],
+    "TEN": ["zehn"],
+    "ELEVEN": ["elf"],
+    "TWELVE": ["zwölf"],
+    "THIRTEEN": ["dreizehn"],
+    "FOURTEEN": ["vierzehn"],
+    "FIFTEEN": ["fünfzehn"],
+    "SIXTEEN": ["sechzehn"],
+    "SEVENTEEN": ["siebzehn"],
+    "EIGHTEEN": ["achtzehn", "option"],
+    "NINETEEN": ["neunzehn"],
+    "TWENTY": ["zwanzig"],
+    "TWENTY_FIVE": ["fünfundzwanzig"],
+    "FIFTY": ["fünfzig"]
 
 
 ## !!! IMPORTANT !!!
