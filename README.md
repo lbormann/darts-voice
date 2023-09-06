@@ -81,10 +81,14 @@ Here are some examples that could work out of the box with model [vosk-model-sma
 #### Dart-correction
 
 - first twenty
+- second and last is miss
+- first second third is twenty
 - first is twenty
 - second triple twelve
+- second is perfect nineteen
 - third one
-- last double ten
+- last is double ten
+- second is big ten
 - second is two
 - last is number three
 - second is twenty five
@@ -227,7 +231,7 @@ _ _ _ _ _ _ _ _ _ _
     
     "ZERO": ["null", "vorbei", "verhauen", "frauen"],
     "ONE": ["eins"],
-    "TWO": ["zwei"],
+    "TWO": ["zwei", "frei"],
     "THREE": ["drei"],
     "FOUR": ["vier"],
     "FIVE": ["fünf"],
@@ -266,6 +270,8 @@ It may be buggy. I've just coded it for fast fun with https://autodarts.io. You 
 ### Done
 
 - init project
+- add dart-correction for multiple darts
+- add microphone 'reconnection'
 
 
 ## Resources

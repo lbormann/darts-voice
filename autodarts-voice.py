@@ -31,7 +31,7 @@ main_directory = os.path.dirname(os.path.realpath(__file__))
 
 
 
-VERSION = '1.0.1'
+VERSION = '1.0.2'
 
 
 
@@ -97,7 +97,7 @@ LANGUAGE_KEYWORDS = {
         
         "ZERO": ["null", "vorbei", "verhauen", "frauen"],
         "ONE": ["eins"],
-        "TWO": ["zwei"],
+        "TWO": ["zwei", "frei"],
         "THREE": ["drei"],
         "FOUR": ["vier"],
         "FIVE": ["fünf"],
@@ -138,23 +138,35 @@ def ppe(message, error_object):
 
 def text2dart_score(text):
     try:
-        throw_number = None
-        field_name = None
-
         words = text.split(" ")
-        # Überprüfung und Zuordnung der throw-number
-        if words[0] in THROW_NUMBER_MAP:
-            throw_number = THROW_NUMBER_MAP[words[0]]
+
+        if len(words) < 2:
+            return (None, None)
         
-        # Überprüfung und Zuordnung der field-name
-        # Beginnen bei der gesamten Wortliste und sukzessive das erste Wort entfernen
-        for i in range(len(words)):
+        throw_number_map = THROW_NUMBER_MAP.copy()
+        throw_numbers = []
+        words_copy = words.copy()
+        
+        while len(throw_numbers) < 3 and len(words_copy) > 0:
+            current_word = words_copy.pop(0)
+            if current_word in throw_number_map:
+                throw_numbers.append(throw_number_map[current_word] - 1)
+                del throw_number_map[current_word]
+
+        throw_numbers_count = len(throw_numbers)
+        if throw_numbers_count == 0:
+            return (None, None)
+        
+        field_name = None
+        for i in range(throw_numbers_count, len(words)):
             possible_field = " ".join(words[i:])
             if possible_field in FIELD_NAME_MAP:
                 field_name = FIELD_NAME_MAP[possible_field]
                 break
+        if field_name == None:
+            return (None, None)
 
-        return (throw_number, field_name)
+        return (throw_numbers, field_name)
 
     except Exception as e:
         ppe("Text2dart failed: ", e)
@@ -284,20 +296,16 @@ def init_keywords():
 
 def start_voice_recognition():
     def process(*args):
+
         def callback(indata, frames, time, status):
             """This is called (from a separate thread) for each audio block."""
             if status:
-                print(status, file=sys.stderr)
+                if status.input_overflow:
+                    ppi("Input overflow detected! Microphone disconnected!")
+                else:
+                    print(status, file=sys.stderr)
             q.put(bytes(indata))
 
-        samplerate = None
-        try:
-            device_info = sd.query_devices(None, "input")
-            # soundfile expects an int, sounddevice provides a float:
-            samplerate = int(device_info["default_samplerate"])
-        except Exception as e:
-            ppe("Microphone initialization failed: ", e)
-            return
 
         try:
             init_keywords()
@@ -305,72 +313,82 @@ def start_voice_recognition():
             ppe("Keyword initialization failed: ", e)
             return
 
+        global WS_DATA_FEEDER
 
-        try:
-            q = queue.Queue()
-            global WS_DATA_FEEDER
 
-            # lang="en-us"
-            # model_name="vosk-model-en-us-daanzu-20200905"
-            model = Model(model_path=str(MODEL_PATH))
-            rec = KaldiRecognizer(model, samplerate)
-        
-            with sd.RawInputStream(samplerate = samplerate, 
-                                    blocksize = 8000, 
-                                    device = None,
-                                    dtype = "int16", 
-                                    channels = 1, 
-                                    callback = callback):
-                while True:
-                    try:
-                        data = q.get()
-                        if rec.AcceptWaveform(data):
-                            stt_result = rec.Result()
-                            stt_result = json.loads(stt_result)
-                            stt_result = stt_result['text']
-                            if stt_result != '':
-                                stt_result = stt_result.lower()
 
-                                if text2nextgame(stt_result):
-                                    ppi(f"Command 'NEXT-GAME'")
-                                    if WS_DATA_FEEDER is not None:
-                                        WS_DATA_FEEDER.send('next-game')
-                                    continue
+        while True:
+            try:
+                device_info = sd.query_devices(None, "input")
+                samplerate = int(device_info["default_samplerate"])  
+                q = queue.Queue()
+                
+                with sd.RawInputStream(samplerate=samplerate, 
+                                        blocksize=8000, 
+                                        device=None,
+                                        dtype="int16", 
+                                        channels=1, 
+                                        callback=callback) as stream:
+                    
+                    model = Model(model_path=str(MODEL_PATH))
+                    rec = KaldiRecognizer(model, samplerate)
 
-                                if text2next(stt_result):
-                                    ppi(f"Command 'NEXT'")
-                                    if WS_DATA_FEEDER is not None:
-                                        WS_DATA_FEEDER.send('next')
-                                    continue
+                    while stream.active:
+                        try:
+                            data = q.get()
+                            if rec.AcceptWaveform(data):
+                                stt_result = rec.Result()
+                                stt_result = json.loads(stt_result)
+                                stt_result = stt_result['text']
+                                if stt_result != '':
+                                    stt_result = stt_result.lower()
 
-                                if text2undo(stt_result):
-                                    ppi(f"Command 'UNDO'")
-                                    if WS_DATA_FEEDER is not None:
-                                        WS_DATA_FEEDER.send('undo')
-                                    continue
+                                    if text2nextgame(stt_result):
+                                        ppi(f"Command 'NEXT-GAME'")
+                                        if WS_DATA_FEEDER is not None:
+                                            WS_DATA_FEEDER.send('next-game')
+                                        continue
+
+                                    if text2next(stt_result):
+                                        ppi(f"Command 'NEXT'")
+                                        if WS_DATA_FEEDER is not None:
+                                            WS_DATA_FEEDER.send('next')
+                                        continue
+
+                                    if text2undo(stt_result):
+                                        ppi(f"Command 'UNDO'")
+                                        if WS_DATA_FEEDER is not None:
+                                            WS_DATA_FEEDER.send('undo')
+                                        continue
+                                    
+                                    (dart_numbers, dart_field) = text2dart_score(stt_result)
+                                    # ppi(f"Command 't2d-debug': Dart {dart_numbers} = {dart_field}")
+                                    if dart_numbers != None and dart_field != None:
+                                        dart_numbers_str = ":".join(str(num) for num in dart_numbers)
+                                        ppi(f"Command 'CORRECT': Dart {dart_numbers_str} = {dart_field}")
+                                        if WS_DATA_FEEDER is not None:
+                                            WS_DATA_FEEDER.send(f'correct:{(dart_numbers_str)}:{dart_field}')
+                                        else:
+                                            ppi("DATA-FEEDER not connected")
+                                        continue
+                                    
+                                    ppi(f"Unrecognized-Command: {stt_result}")
+            
+                            # else:
+                                # stt_result = rec.PartialResult()
+                                # stt_result = json.loads(stt_result)
+                                # stt_result = stt_result['transcription']
+                                # ppi(f"Voice-Recognition: (Partial): {stt_result}")
                                 
-                                (dart_number, dart_field) = text2dart_score(stt_result)
-                                # ppi(f"Command 't2d-debug': Dart {dart_number} = {dart_field}")
-                                if dart_number != None and dart_field != None:
-                                    ppi(f"Command 'CORRECT': Dart {dart_number} = {dart_field}")
-                                    if WS_DATA_FEEDER is not None:
-                                        WS_DATA_FEEDER.send(f'correct:{(dart_number - 1)}:{dart_field}')
-                                    continue
-                                
-                                ppi(f"Unrecognized-Command: {stt_result}")
-        
-                        # else:
-                            # stt_result = rec.PartialResult()
-                            # stt_result = json.loads(stt_result)
-                            # stt_result = stt_result['transcription']
-                            # ppi(f"Voice-Recognition: (Partial): {stt_result}")
-                            
-                    except Exception as e:
-                        ppe("Recognition-step failed: ", e)
+                        except Exception as e:
+                            ppe("Recognition-step failed: ", e)
+                            break
 
+            except Exception as e:
+                ppe("Recognition stopped! Wait for microphone: ", e)
+                time.sleep(5)
+                continue
 
-        except Exception as e:
-            ppe("KaldiRecognizer initialization failed: ", e)
 
     threading.Thread(target=process).start()
 
