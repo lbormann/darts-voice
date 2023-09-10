@@ -31,7 +31,7 @@ main_directory = os.path.dirname(os.path.realpath(__file__))
 
 
 
-VERSION = '1.0.2'
+VERSION = '1.0.3'
 
 
 
@@ -45,6 +45,8 @@ LANGUAGE_KEYWORDS = {
         "NEXT_GAME": ["next game"],
         "NEXT": ["next"],
         "UNDO": ["undo", "back", "bag"],
+        "BAN_CALLER": ["ban caller"],
+        "CHANGE_CALLER": ["change caller"],
 
         "FIRST_DART": ["first", "for", "prime", "up"],
         "SECOND_DART": ["second", "middle"],
@@ -86,8 +88,10 @@ LANGUAGE_KEYWORDS = {
         "NEXT_GAME": ["nächstes spiel", "nächste spiel"],
         "NEXT": ["weiter"],
         "UNDO": ["zurück"],
+        "BAN_CALLER": ["sprecher ausschließen"],
+        "CHANGE_CALLER": ["sprecher wechseln"],
 
-        "FIRST_DART": ["erster", "erste", "erstens"],
+        "FIRST_DART": ["erster", "erste", "erstens", "erst"],
         "SECOND_DART": ["zweiter", "zweite", "zweitens"],
         "THIRD_DART": ["dritter", "dritte", "drittens", "britta", "letzter"],
 
@@ -97,7 +101,7 @@ LANGUAGE_KEYWORDS = {
         
         "ZERO": ["null", "vorbei", "verhauen", "frauen"],
         "ONE": ["eins"],
-        "TWO": ["zwei", "frei"],
+        "TWO": ["zwei", "frei", "zwar"],
         "THREE": ["drei"],
         "FOUR": ["vier"],
         "FIVE": ["fünf"],
@@ -105,7 +109,7 @@ LANGUAGE_KEYWORDS = {
         "SEVEN": ["sieben"],
         "EIGHT": ["acht"],
         "NINE": ["neun", "neuen"],
-        "TEN": ["zehn"],
+        "TEN": ["zehn", "sehen"],
         "ELEVEN": ["elf"],
         "TWELVE": ["zwölf"],
         "THIRTEEN": ["dreizehn"],
@@ -181,10 +185,18 @@ def text2next(text):
 def text2undo(text):
     return text in UNDO_MAP
 
+def text2ban_caller(text):
+    return text in BAN_CALLER_MAP
+
+def text2change_caller(text):
+    return text in CHANGE_CALLER_MAP
+
 def init_keywords():
     global NEXT_MAP
     global NEXT_GAME_MAP
     global UNDO_MAP
+    global BAN_CALLER_MAP
+    global CHANGE_CALLER_MAP
     global THROW_NUMBER_MAP
     global FIELD_NAME_MAP
 
@@ -195,6 +207,8 @@ def init_keywords():
         NEXT_MAP = list(set(pre_def["NEXT"] + [s.lower() for s in KEYWORDS_NEXT]))
         NEXT_GAME_MAP = list(set(pre_def["NEXT_GAME"] + [s.lower() for s in KEYWORDS_NEXT_GAME]))
         UNDO_MAP = list(set(pre_def["UNDO"] + [s.lower() for s in KEYWORDS_UNDO]))
+        BAN_CALLER_MAP = list(set(pre_def["BAN_CALLER"] + [s.lower() for s in KEYWORDS_BAN_CALLER]))
+        CHANGE_CALLER_MAP = list(set(pre_def["CHANGE_CALLER"] + [s.lower() for s in KEYWORDS_CHANGE_CALLER]))
 
         dart_word_map = {
             1: list(set(pre_def["FIRST_DART"] + [s.lower() for s in KEYWORDS_FIRST_DART])),
@@ -237,6 +251,8 @@ def init_keywords():
         NEXT_MAP = list(set([s.lower() for s in KEYWORDS_NEXT]))
         NEXT_GAME_MAP = list(set([s.lower() for s in KEYWORDS_NEXT_GAME]))
         UNDO_MAP = list(set([s.lower() for s in KEYWORDS_UNDO]))
+        BAN_CALLER_MAP = list(set([s.lower() for s in KEYWORDS_BAN_CALLER]))
+        CHANGE_CALLER_MAP = list(set([s.lower() for s in KEYWORDS_CHANGE_CALLER]))
 
         dart_word_map = {
             1: list(set([s.lower() for s in KEYWORDS_FIRST_DART])),
@@ -340,39 +356,45 @@ def start_voice_recognition():
                                 stt_result = rec.Result()
                                 stt_result = json.loads(stt_result)
                                 stt_result = stt_result['text']
-                                if stt_result != '':
-                                    stt_result = stt_result.lower()
+                                if stt_result == '' or WS_DATA_FEEDER is None:
+                                    continue
 
-                                    if text2nextgame(stt_result):
-                                        ppi(f"Command 'NEXT-GAME'")
-                                        if WS_DATA_FEEDER is not None:
-                                            WS_DATA_FEEDER.send('next-game')
-                                        continue
+                                stt_result = stt_result.lower()
 
-                                    if text2next(stt_result):
-                                        ppi(f"Command 'NEXT'")
-                                        if WS_DATA_FEEDER is not None:
-                                            WS_DATA_FEEDER.send('next')
-                                        continue
+                                if text2nextgame(stt_result):
+                                    ppi(f"Command 'NEXT-GAME'")
+                                    WS_DATA_FEEDER.send('next-game')
+                                    continue
 
-                                    if text2undo(stt_result):
-                                        ppi(f"Command 'UNDO'")
-                                        if WS_DATA_FEEDER is not None:
-                                            WS_DATA_FEEDER.send('undo')
-                                        continue
-                                    
-                                    (dart_numbers, dart_field) = text2dart_score(stt_result)
-                                    # ppi(f"Command 't2d-debug': Dart {dart_numbers} = {dart_field}")
-                                    if dart_numbers != None and dart_field != None:
-                                        dart_numbers_str = ":".join(str(num) for num in dart_numbers)
-                                        ppi(f"Command 'CORRECT': Dart {dart_numbers_str} = {dart_field}")
-                                        if WS_DATA_FEEDER is not None:
-                                            WS_DATA_FEEDER.send(f'correct:{(dart_numbers_str)}:{dart_field}')
-                                        else:
-                                            ppi("DATA-FEEDER not connected")
-                                        continue
-                                    
-                                    ppi(f"Unrecognized-Command: {stt_result}")
+                                if text2next(stt_result):
+                                    ppi(f"Command 'NEXT'")
+                                    WS_DATA_FEEDER.send('next')
+                                    continue
+
+                                if text2undo(stt_result):
+                                    ppi(f"Command 'UNDO'")
+                                    WS_DATA_FEEDER.send('undo')
+                                    continue
+                                
+                                if text2change_caller(stt_result):
+                                    ppi(f"Command 'CHANGE-CALLER'")
+                                    WS_DATA_FEEDER.send('ban:change')
+                                    continue
+
+                                if text2ban_caller(stt_result):
+                                    ppi(f"Command 'BAN-CALLER'")
+                                    WS_DATA_FEEDER.send('ban')
+                                    continue
+
+                                (dart_numbers, dart_field) = text2dart_score(stt_result)
+                                # ppi(f"Command 't2d-debug': Dart {dart_numbers} = {dart_field}")
+                                if dart_numbers != None and dart_field != None:
+                                    dart_numbers_str = ":".join(str(num) for num in dart_numbers)
+                                    ppi(f"Command 'CORRECT': Dart {dart_numbers_str} = {dart_field}")
+                                    WS_DATA_FEEDER.send(f'correct:{(dart_numbers_str)}:{dart_field}')
+                                    continue
+                                
+                                ppi(f"Unrecognized-Command: {stt_result}")
             
                             # else:
                                 # stt_result = rec.PartialResult()
@@ -435,7 +457,9 @@ if __name__ == "__main__":
     ap.add_argument("-L", "--language", required=False, default=1, type=int, choices=range(0, len(LANGUAGE_KEYWORDS) + 1), help="Predefined language keywords")
     ap.add_argument("-KNG", "--keywords_next_game", required=False, default=[], nargs='+', help="Keywords for command 'next-game'")
     ap.add_argument("-KN", "--keywords_next", required=False, default=[], nargs='+', help="Keywords for command 'next'")
-    ap.add_argument("-KU", "--keywords_undo", required=False, default=[], nargs='+', help="Keywords for command 'undo'")       
+    ap.add_argument("-KU", "--keywords_undo", required=False, default=[], nargs='+', help="Keywords for command 'undo'")  
+    ap.add_argument("-KBC", "--keywords_ban_caller", required=False, default=[], nargs='+', help="Keywords for command 'ban-caller'") 
+    ap.add_argument("-KCC", "--keywords_change_caller", required=False, default=[], nargs='+', help="Keywords for command 'change-caller'") 
     ap.add_argument("-KFD", "--keywords_first_dart", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")  
     ap.add_argument("-KSD", "--keywords_second_dart", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
     ap.add_argument("-KTD", "--keywords_third_dart", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
@@ -477,6 +501,8 @@ if __name__ == "__main__":
     KEYWORDS_NEXT_GAME = args['keywords_next_game']
     KEYWORDS_NEXT = args['keywords_next']
     KEYWORDS_UNDO = args['keywords_undo']
+    KEYWORDS_BAN_CALLER = args['keywords_ban_caller']
+    KEYWORDS_CHANGE_CALLER = args['keywords_change_caller']
     KEYWORDS_FIRST_DART = args['keywords_first_dart']
     KEYWORDS_SECOND_DART = args['keywords_second_dart']
     KEYWORDS_THIRD_DART = args['keywords_third_dart']
@@ -532,6 +558,12 @@ if __name__ == "__main__":
 
     global UNDO_MAP
     UNDO_MAP = []
+
+    global BAN_CALLER_MAP
+    BAN_CALLER_MAP = []
+
+    global CHANGE_CALLER_MAP
+    CHANGE_CALLER_MAP = []
 
     global THROW_NUMBER_MAP
     THROW_NUMBER_MAP = {}

@@ -111,6 +111,14 @@ Here are some examples that could work out of the box with model [vosk-model-sma
 - back
 - undo
 
+#### Ban current caller
+
+- ban caller
+
+#### Change current caller
+
+- change caller
+
 
  
 ### Arguments
@@ -120,6 +128,8 @@ Here are some examples that could work out of the box with model [vosk-model-sma
 - -KNG / --keywords_next_game [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
 - -KN / --keywords_next [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
 - -KU / --keywords_undo [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
+- -KBC / --keywords_ban_caller [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
+- -KCC / --keywords_change_caller [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
 - -KFD / --keywords_first_dart [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
 - -KSD / --keywords_second_dart [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
 - -KTD / --keywords_third_dart [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
@@ -182,6 +192,8 @@ _ _ _ _ _ _ _ _ _ _
     "NEXT_GAME": ["next game"],
     "NEXT": ["next"],
     "UNDO": ["undo", "back", "bag"],
+    "BAN_CALLER": ["ban caller"],
+    "CHANGE_CALLER": ["change caller"],
 
     "FIRST_DART": ["first", "for", "prime", "up"],
     "SECOND_DART": ["second", "middle"],
@@ -220,8 +232,10 @@ _ _ _ _ _ _ _ _ _ _
     "NEXT_GAME": ["nächstes spiel", "nächste spiel"],
     "NEXT": ["weiter"],
     "UNDO": ["zurück"],
+    "BAN_CALLER": ["sprecher ausschließen"],
+    "CHANGE_CALLER": ["sprecher wechseln"],
 
-    "FIRST_DART": ["erster", "erste", "erstens"],
+    "FIRST_DART": ["erster", "erste", "erstens", "erst"],
     "SECOND_DART": ["zweiter", "zweite", "zweitens"],
     "THIRD_DART": ["dritter", "dritte", "drittens", "britta", "letzter"],
 
@@ -231,7 +245,7 @@ _ _ _ _ _ _ _ _ _ _
     
     "ZERO": ["null", "vorbei", "verhauen", "frauen"],
     "ONE": ["eins"],
-    "TWO": ["zwei", "frei"],
+    "TWO": ["zwei", "frei", "zwar"],
     "THREE": ["drei"],
     "FOUR": ["vier"],
     "FIVE": ["fünf"],
@@ -239,7 +253,7 @@ _ _ _ _ _ _ _ _ _ _
     "SEVEN": ["sieben"],
     "EIGHT": ["acht"],
     "NINE": ["neun", "neuen"],
-    "TEN": ["zehn"],
+    "TEN": ["zehn", "sehen"],
     "ELEVEN": ["elf"],
     "TWELVE": ["zwölf"],
     "THIRTEEN": ["dreizehn"],
