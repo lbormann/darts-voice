@@ -100,11 +100,9 @@ Here are some examples that could work out of the box with model [vosk-model-sma
 
 - next game
 
-
 #### Go next
 
 - next
-
 
 #### Go back
 
@@ -118,6 +116,13 @@ Here are some examples that could work out of the box with model [vosk-model-sma
 #### Change current caller
 
 - change caller
+
+#### Control board
+
+- start board
+- stop board
+- reset board
+- calibrate board
 
 
  
