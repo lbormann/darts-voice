@@ -31,7 +31,7 @@ main_directory = os.path.dirname(os.path.realpath(__file__))
 
 
 
-VERSION = '1.0.3'
+VERSION = '1.0.4'
 
 
 
@@ -47,6 +47,11 @@ LANGUAGE_KEYWORDS = {
         "UNDO": ["undo", "back", "bag"],
         "BAN_CALLER": ["ban caller"],
         "CHANGE_CALLER": ["change caller"],
+
+        "START_BOARD": ["start board"],
+        "STOP_BOARD": ["stop board"],
+        "RESET_BOARD": ["reset board"],
+        "CALIBRATE_BOARD": ["calibrate board"],
 
         "FIRST_DART": ["first", "for", "prime", "up"],
         "SECOND_DART": ["second", "middle"],
@@ -90,6 +95,11 @@ LANGUAGE_KEYWORDS = {
         "UNDO": ["zurück"],
         "BAN_CALLER": ["sprecher ausschließen"],
         "CHANGE_CALLER": ["sprecher wechseln"],
+
+        "START_BOARD": ["brett starten"],
+        "STOP_BOARD": ["brett stoppen"],
+        "RESET_BOARD": ["brett zurücksetzen"],
+        "CALIBRATE_BOARD": ["brett kalibrieren"],
 
         "FIRST_DART": ["erster", "erste", "erstens", "erst"],
         "SECOND_DART": ["zweiter", "zweite", "zweitens"],
@@ -191,12 +201,28 @@ def text2ban_caller(text):
 def text2change_caller(text):
     return text in CHANGE_CALLER_MAP
 
+def text2start_board(text):
+    return text in START_BOARD_MAP
+
+def text2stop_board(text):
+    return text in STOP_BOARD_MAP
+
+def text2reset_board(text):
+    return text in RESET_BOARD_MAP
+
+def text2calibrate_board(text):
+    return text in CALIBRATE_BOARD_MAP
+
 def init_keywords():
     global NEXT_MAP
     global NEXT_GAME_MAP
     global UNDO_MAP
     global BAN_CALLER_MAP
     global CHANGE_CALLER_MAP
+    global START_BOARD_MAP
+    global STOP_BOARD_MAP
+    global RESET_BOARD_MAP
+    global CALIBRATE_BOARD_MAP
     global THROW_NUMBER_MAP
     global FIELD_NAME_MAP
 
@@ -209,6 +235,10 @@ def init_keywords():
         UNDO_MAP = list(set(pre_def["UNDO"] + [s.lower() for s in KEYWORDS_UNDO]))
         BAN_CALLER_MAP = list(set(pre_def["BAN_CALLER"] + [s.lower() for s in KEYWORDS_BAN_CALLER]))
         CHANGE_CALLER_MAP = list(set(pre_def["CHANGE_CALLER"] + [s.lower() for s in KEYWORDS_CHANGE_CALLER]))
+        START_BOARD_MAP = list(set(pre_def["START_BOARD"] + [s.lower() for s in KEYWORDS_START_BOARD]))
+        STOP_BOARD_MAP = list(set(pre_def["STOP_BOARD"] + [s.lower() for s in KEYWORDS_STOP_BOARD]))
+        RESET_BOARD_MAP = list(set(pre_def["RESET_BOARD"] + [s.lower() for s in KEYWORDS_RESET_BOARD]))
+        CALIBRATE_BOARD_MAP = list(set(pre_def["CALIBRATE_BOARD"] + [s.lower() for s in KEYWORDS_CALIBRATE_BOARD]))
 
         dart_word_map = {
             1: list(set(pre_def["FIRST_DART"] + [s.lower() for s in KEYWORDS_FIRST_DART])),
@@ -253,6 +283,10 @@ def init_keywords():
         UNDO_MAP = list(set([s.lower() for s in KEYWORDS_UNDO]))
         BAN_CALLER_MAP = list(set([s.lower() for s in KEYWORDS_BAN_CALLER]))
         CHANGE_CALLER_MAP = list(set([s.lower() for s in KEYWORDS_CHANGE_CALLER]))
+        START_BOARD_MAP = list(set([s.lower() for s in KEYWORDS_START_BOARD]))
+        STOP_BOARD_MAP = list(set([s.lower() for s in KEYWORDS_STOP_BOARD]))
+        RESET_BOARD_MAP = list(set([s.lower() for s in KEYWORDS_RESET_BOARD]))
+        CALIBRATE_BOARD_MAP = list(set([s.lower() for s in KEYWORDS_CALIBRATE_BOARD]))
 
         dart_word_map = {
             1: list(set([s.lower() for s in KEYWORDS_FIRST_DART])),
@@ -386,6 +420,26 @@ def start_voice_recognition():
                                     WS_DATA_FEEDER.send('ban')
                                     continue
 
+                                if text2start_board(stt_result):
+                                    ppi(f"Command 'START-BOARD'")
+                                    WS_DATA_FEEDER.send('board-start')
+                                    continue
+
+                                if text2stop_board(stt_result):
+                                    ppi(f"Command 'STOP-BOARD'")
+                                    WS_DATA_FEEDER.send('board-stop')
+                                    continue
+                                
+                                if text2reset_board(stt_result):
+                                    ppi(f"Command 'RESET-BOARD'")
+                                    WS_DATA_FEEDER.send('board-reset')
+                                    continue
+
+                                if text2calibrate_board(stt_result):
+                                    ppi(f"Command 'CALIBRATE-BOARD'")
+                                    WS_DATA_FEEDER.send('board-calibrate')
+                                    continue
+
                                 (dart_numbers, dart_field) = text2dart_score(stt_result)
                                 # ppi(f"Command 't2d-debug': Dart {dart_numbers} = {dart_field}")
                                 if dart_numbers != None and dart_field != None:
@@ -460,6 +514,10 @@ if __name__ == "__main__":
     ap.add_argument("-KU", "--keywords_undo", required=False, default=[], nargs='+', help="Keywords for command 'undo'")  
     ap.add_argument("-KBC", "--keywords_ban_caller", required=False, default=[], nargs='+', help="Keywords for command 'ban-caller'") 
     ap.add_argument("-KCC", "--keywords_change_caller", required=False, default=[], nargs='+', help="Keywords for command 'change-caller'") 
+    ap.add_argument("-KSB", "--keywords_start_board", required=False, default=[], nargs='+', help="Keywords for command 'start-board'") 
+    ap.add_argument("-KSPB", "--keywords_stop_board", required=False, default=[], nargs='+', help="Keywords for command 'stop-board'") 
+    ap.add_argument("-KRB", "--keywords_reset_board", required=False, default=[], nargs='+', help="Keywords for command 'reset-board'") 
+    ap.add_argument("-KCB", "--keywords_calibrate_board", required=False, default=[], nargs='+', help="Keywords for command 'calibrate-board'") 
     ap.add_argument("-KFD", "--keywords_first_dart", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")  
     ap.add_argument("-KSD", "--keywords_second_dart", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
     ap.add_argument("-KTD", "--keywords_third_dart", required=False, default=[], nargs='+', help="Keywords for command 'dart-correction'")
@@ -503,6 +561,10 @@ if __name__ == "__main__":
     KEYWORDS_UNDO = args['keywords_undo']
     KEYWORDS_BAN_CALLER = args['keywords_ban_caller']
     KEYWORDS_CHANGE_CALLER = args['keywords_change_caller']
+    KEYWORDS_START_BOARD = args['keywords_start_board']
+    KEYWORDS_STOP_BOARD = args['keywords_stop_board']
+    KEYWORDS_RESET_BOARD = args['keywords_reset_board']
+    KEYWORDS_CALIBRATE_BOARD = args['keywords_calibrate_board']
     KEYWORDS_FIRST_DART = args['keywords_first_dart']
     KEYWORDS_SECOND_DART = args['keywords_second_dart']
     KEYWORDS_THIRD_DART = args['keywords_third_dart']
@@ -564,6 +626,18 @@ if __name__ == "__main__":
 
     global CHANGE_CALLER_MAP
     CHANGE_CALLER_MAP = []
+
+    global START_BOARD_MAP
+    START_BOARD_MAP = []
+    
+    global STOP_BOARD_MAP
+    STOP_BOARD_MAP = []
+
+    global RESET_BOARD_MAP
+    RESET_BOARD_MAP = []
+
+    global CALIBRATE_BOARD_MAP
+    CALIBRATE_BOARD_MAP = []
 
     global THROW_NUMBER_MAP
     THROW_NUMBER_MAP = {}

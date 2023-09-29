@@ -130,6 +130,10 @@ Here are some examples that could work out of the box with model [vosk-model-sma
 - -KU / --keywords_undo [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
 - -KBC / --keywords_ban_caller [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
 - -KCC / --keywords_change_caller [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
+- -KSB / --keywords_start_board [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
+- -KSPB / --keywords_stop_board [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
+- -KRB / --keywords_reset_board [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
+- -KCB / --keywords_calibrate_board [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
 - -KFD / --keywords_first_dart [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
 - -KSD / --keywords_second_dart [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
 - -KTD / --keywords_third_dart [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
@@ -195,6 +199,11 @@ _ _ _ _ _ _ _ _ _ _
     "BAN_CALLER": ["ban caller"],
     "CHANGE_CALLER": ["change caller"],
 
+    "START_BOARD": ["start board"],
+    "STOP_BOARD": ["stop board"],
+    "RESET_BOARD": ["reset board"],
+    "CALIBRATE_BOARD": ["calibrate board"],
+
     "FIRST_DART": ["first", "for", "prime", "up"],
     "SECOND_DART": ["second", "middle"],
     "THIRD_DART": ["third", "thought", "last", "down"],
@@ -234,6 +243,11 @@ _ _ _ _ _ _ _ _ _ _
     "UNDO": ["zurück"],
     "BAN_CALLER": ["sprecher ausschließen"],
     "CHANGE_CALLER": ["sprecher wechseln"],
+
+    "START_BOARD": ["brett starten", "red starten"],
+    "STOP_BOARD": ["brett stoppen", "red stoppen"],
+    "RESET_BOARD": ["brett zurücksetzen", "red zurücksetzen"],
+    "CALIBRATE_BOARD": ["brett kalibrieren", "red kalibrieren"],
 
     "FIRST_DART": ["erster", "erste", "erstens", "erst"],
     "SECOND_DART": ["zweiter", "zweite", "zweitens"],
