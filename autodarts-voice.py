@@ -31,7 +31,7 @@ main_directory = os.path.dirname(os.path.realpath(__file__))
 
 
 
-VERSION = '1.0.4'
+VERSION = '1.0.5'
 
 
 
@@ -47,7 +47,6 @@ LANGUAGE_KEYWORDS = {
         "UNDO": ["undo", "back", "bag"],
         "BAN_CALLER": ["ban caller"],
         "CHANGE_CALLER": ["change caller"],
-
         "START_BOARD": ["start board"],
         "STOP_BOARD": ["stop board"],
         "RESET_BOARD": ["reset board"],
@@ -95,11 +94,10 @@ LANGUAGE_KEYWORDS = {
         "UNDO": ["zurück"],
         "BAN_CALLER": ["sprecher ausschließen"],
         "CHANGE_CALLER": ["sprecher wechseln"],
-
-        "START_BOARD": ["brett starten", "red starten"],
-        "STOP_BOARD": ["brett stoppen", "red stoppen"],
-        "RESET_BOARD": ["brett zurücksetzen", "red zurücksetzen"],
-        "CALIBRATE_BOARD": ["brett kalibrieren", "red kalibrieren"],
+        "START_BOARD": ["starten"],
+        "STOP_BOARD": ["stoppen"],
+        "RESET_BOARD": ["zurücksetzen"],
+        "CALIBRATE_BOARD": ["kalibrieren"],
 
         "FIRST_DART": ["erster", "erste", "erstens", "erst"],
         "SECOND_DART": ["zweiter", "zweite", "zweitens"],
