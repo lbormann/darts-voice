@@ -4,8 +4,14 @@
 Autodarts-voice transcribes your voice in realtime (offline) to control an autodarts-game. A running instance of https://github.com/lbormann/autodarts-caller is needed for processing commands.
 Autodarts-voice uses vosk. check it out: https://alphacephei.com/vosk
 
+On Linux you need to install PortAudio:
+
+    sudo apt-get install portaudio19-dev
+
+
 
 ## INSTALL INSTRUCTION
+
 
 ### Desktop-OS:
 
