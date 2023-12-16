@@ -1,0 +1,44 @@
+PUSHD .
+python "autodarts-voice.py" ^
+-CON "127.0.0.1:8079" ^
+-MP "C:\\Users\\Luca\\Desktop\\Programme\\autodarts-desktop\\autodarts-voice-vosk-models\\vosk-model-small-en-us-0.15" ^
+-L "0" ^
+-KNG "next game" ^
+-KN "next" ^
+-KU "undo" "back" "bag" ^
+-KBC "ban" ^
+-KCC "change" ^
+-KSB "start board" ^
+-KSPB "stop board" ^
+-KRB "reset board" ^
+-KCB "calibrate board" ^
+-KFD "first" "for" "prime" "up" ^
+-KSD "second" "middle" ^
+-KTD "third" "thought" "last" "down" ^
+-KS "single" "singer" "simple" ^
+-KD "double" "tablet" "number" "great" "big" ^
+-KT "triple" "perfect" "tribal" "couple" "templar" "tumbler" ^
+-KZERO "zero" "miss" "his" "myth" ^
+-KONE "one" ^
+-KTWO "two" "to" "too" ^
+-KTHREE "three" "free" ^
+-KFOUR "four" "for" "thor" ^
+-KFIVE "five" "size" ^
+-KSIX "six" ^
+-KSEVEN "seven" ^
+-KEIGHT "eight" "aid" ^
+-KNINE "nine" ^
+-KTEN "ten" "turn" ^
+-KELEVEN "eleven" "level" ^
+-KTWELVE "twelve" "twelfth" ^
+-KTHIRTEEN "thirteen" "thirty" ^
+-KFOURTEEN "fourteen" "fourty" ^
+-KFIFTEEN "fifteen" ^
+-KSIXTEEN "sixteen" "sixty" ^
+-KSEVENTEEN "seventeen" "seventy" ^
+-KEIGHTEEN "eighteen" "eighty" ^
+-KNINETEEN "nineteen" "ninety" ^
+-KTWENTY "twenty" ^
+-KTWENTYFIVE "twenty five" "bull" "bullet" "boy" ^
+-KFIFTY "fifty" "bullseye" ^
+-DEB "1"
