@@ -55,6 +55,26 @@ jobs:
             CMD_BUILD: pyinstaller -F -n autodarts-voice -i resources/autodarts-voice.ico --noconsole --onefile --collect-all vosk autodarts-voice.py
             OUT_FILE_NAME: autodarts-voice.exe
             ASSET_MIME: application/vnd.microsoft.portable-executable
+
+          - os: ubuntu-20.04
+            TARGET: linux-arm64
+            CMD_BUILD: |
+              sudo apt-get update
+              sudo apt-get install -y qemu-user-static binfmt-support
+              docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+              docker run -v $(pwd):/workdir -w /workdir arm64v8/ubuntu:20.04 apt-get update -y && pip install -r requirements.txt --break-system-packages && pyinstaller -F -n autodarts-voice-arm64 -i resources/autodarts-voice.svg --noconsole --onefile --collect-all vosk autodarts-voice.py
+            OUT_FILE_NAME: autodarts-voice-arm64
+            ASSET_MIME: application/octet-stream
+
+          - os: ubuntu-20.04
+            TARGET: linux-arm
+            CMD_BUILD: |
+              sudo apt-get update
+              sudo apt-get install -y qemu-user-static binfmt-support
+              docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+              docker run -v $(pwd):/workdir -w /workdir arm32v7/ubuntu:20.04 apt-get update -y && pip install -r requirements.txt --break-system-packages && pyinstaller -F -n autodarts-voice-arm -i resources/autodarts-voice.svg --noconsole --onefile --collect-all vosk autodarts-voice.py
+            OUT_FILE_NAME: autodarts-voice-arm
+            ASSET_MIME: application/octet-stream
     steps:
     - uses: actions/checkout@v1
 
