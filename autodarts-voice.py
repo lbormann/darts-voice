@@ -31,7 +31,7 @@ main_directory = os.path.dirname(os.path.realpath(__file__))
 
 
 
-VERSION = '1.0.5'
+VERSION = '1.0.6'
 
 
 
@@ -657,6 +657,7 @@ if __name__ == "__main__":
     ppi('##########################################', None, '')
     ppi('VERSION: ' + VERSION, None, '')
     ppi('RUNNING OS: ' + osType + ' | ' + osName + ' | ' + osRelease, None, '')
+    ppi('DONATION: bitcoin:bc1q8dcva098rrrq2uqhv38rj5hayzrqywhudvrmxa', None, '')
     ppi('\r\n', None, '')
 
 
