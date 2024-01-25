@@ -301,16 +301,6 @@ This application requires a running instance of autodarts-caller https://github.
 It may be buggy. I've just coded it for fast fun with https://autodarts.io. You can give me feedback in Discord > wusaaa
 
 
-## TODOs
-
-
-### Done
-
-- init project
-- add dart-correction for multiple darts
-- add microphone 'reconnection'
-
-
 ## Resources
 
 Icon by <a href="https://icon-icons.com/icon/microphone-musical-instrument/60191"></a> on <a href="https://icon-icons.com">icon-icons.com</a>
