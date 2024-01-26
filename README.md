@@ -296,11 +296,6 @@ _ _ _ _ _ _ _ _ _ _
 This application requires a running instance of autodarts-caller https://github.com/lbormann/autodarts-caller
 
 
-## BUGS
-
-It may be buggy. I've just coded it for fast fun with https://autodarts.io. You can give me feedback in Discord > wusaaa
-
-
 ## Resources
 
 Icon by <a href="https://icon-icons.com/icon/microphone-musical-instrument/60191"></a> on <a href="https://icon-icons.com">icon-icons.com</a>
