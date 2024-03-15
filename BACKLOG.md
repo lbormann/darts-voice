@@ -1,1 +1,2 @@
+- improve command recognition
 - add license
