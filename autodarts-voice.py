@@ -4,8 +4,6 @@ import os
 from pathlib import Path
 import platform
 import argparse
-import websocket
-import ssl
 import threading
 import logging
 import time
@@ -14,6 +12,9 @@ import sounddevice as sd
 from vosk import Model, KaldiRecognizer, SetLogLevel
 import sys
 import json
+import requests
+import socketio
+
 
 SetLogLevel(0)
 sh = logging.StreamHandler()
@@ -28,9 +29,13 @@ logger.addHandler(sh)
 main_directory = os.path.dirname(os.path.realpath(__file__))
 
 
+http_session = requests.Session()
+http_session.verify = False
+sio = socketio.Client(http_session=http_session, logger=True, engineio_logger=True)
 
 
-VERSION = '1.0.10'
+
+VERSION = '1.0.11'
 
 
 
@@ -360,9 +365,6 @@ def start_voice_recognition():
             ppe("Keyword initialization failed: ", e)
             return
 
-        global WS_DATA_FEEDER
-
-
 
         while True:
             try:
@@ -387,54 +389,54 @@ def start_voice_recognition():
                                 stt_result = rec.Result()
                                 stt_result = json.loads(stt_result)
                                 stt_result = stt_result['text']
-                                if stt_result == '' or WS_DATA_FEEDER is None:
+                                if stt_result == '' or not sio.connected:
                                     continue
 
                                 stt_result = stt_result.lower()
 
                                 if text2nextgame(stt_result):
                                     ppi(f"Command 'NEXT-GAME'")
-                                    WS_DATA_FEEDER.send('next-game')
+                                    sio.emit('message', 'next-game')
                                     continue
 
                                 if text2next(stt_result):
                                     ppi(f"Command 'NEXT'")
-                                    WS_DATA_FEEDER.send('next')
+                                    sio.emit('message', 'next')
                                     continue
 
                                 if text2undo(stt_result):
                                     ppi(f"Command 'UNDO'")
-                                    WS_DATA_FEEDER.send('undo')
+                                    sio.emit('message', 'undo')
                                     continue
                                 
                                 if text2change_caller(stt_result):
                                     ppi(f"Command 'CHANGE-CALLER'")
-                                    WS_DATA_FEEDER.send('ban:change')
+                                    sio.emit('message', 'ban:change')
                                     continue
 
                                 if text2ban_caller(stt_result):
                                     ppi(f"Command 'BAN-CALLER'")
-                                    WS_DATA_FEEDER.send('ban')
+                                    sio.emit('message', 'ban')
                                     continue
 
                                 if text2start_board(stt_result):
                                     ppi(f"Command 'START-BOARD'")
-                                    WS_DATA_FEEDER.send('board-start')
+                                    sio.emit('message', 'board-start')
                                     continue
 
                                 if text2stop_board(stt_result):
                                     ppi(f"Command 'STOP-BOARD'")
-                                    WS_DATA_FEEDER.send('board-stop')
+                                    sio.emit('message', 'board-stop')
                                     continue
                                 
                                 if text2reset_board(stt_result):
                                     ppi(f"Command 'RESET-BOARD'")
-                                    WS_DATA_FEEDER.send('board-reset')
+                                    sio.emit('message', 'board-reset')
                                     continue
 
                                 if text2calibrate_board(stt_result):
                                     ppi(f"Command 'CALIBRATE-BOARD'")
-                                    WS_DATA_FEEDER.send('board-calibrate')
+                                    sio.emit('message', 'board-calibrate')
                                     continue
 
                                 (dart_numbers, dart_field) = text2dart_score(stt_result)
@@ -442,7 +444,7 @@ def start_voice_recognition():
                                 if dart_numbers != None and dart_field != None:
                                     dart_numbers_str = ":".join(str(num) for num in dart_numbers)
                                     ppi(f"Command 'CORRECT': Dart {dart_numbers_str} = {dart_field}")
-                                    WS_DATA_FEEDER.send(f'correct:{(dart_numbers_str)}:{dart_field}')
+                                    sio.emit('message', f'correct:{(dart_numbers_str)}:{dart_field}')
                                     continue
                                 
                                 ppi(f"Unrecognized-Command: {stt_result}")
@@ -467,50 +469,37 @@ def start_voice_recognition():
 
 
 
-def build_data_feeder_url():
-    server_host = CON.replace('ws://', '').replace('wss://', '').replace('http://', '').replace('https://', '')
-    server_url = 'wss://' + server_host
-    try:
-        ws = websocket.create_connection(server_url, sslopt={"cert_reqs": ssl.CERT_NONE})
-        ws.close()
-    except Exception as e_ws:
-        try:
-            server_url = 'ws://' + server_host
-            ws = websocket.create_connection(server_url)
-            ws.close()
-        except:
-            pass
-    return server_url
+
+@sio.event
+def connect():
+    ppi('CONNECTED TO DATA-FEEDER ' + sio.connection_url)
+
+@sio.event
+def connect_error(data):
+    if DEBUG:
+        ppe("CONNECTION TO DATA-FEEDER FAILED! " + sio.connection_url, data)
+
+
+@sio.event
+def disconnect():
+    ppi('DISCONNECTED FROM DATA-FEEDER ' + sio.connection_url)
+
+
 
 def connect_data_feeder():
-    def process(*args):
-        global WS_DATA_FEEDER
-        websocket.enableTrace(False)
-
-        WS_DATA_FEEDER = websocket.WebSocketApp(build_data_feeder_url(),
-                                on_open = on_open_data_feeder,
-                                on_error = on_error_data_feeder,
-                                on_close = on_close_data_feeder)
-        WS_DATA_FEEDER.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
-
-    threading.Thread(target=process).start()
-
-def on_open_data_feeder(ws):
-    ppi('CONNECTED TO DATA-FEEDER ' + str(ws.url))
-    
-def on_close_data_feeder(ws, close_status_code, close_msg):
     try:
-        ppi("Websocket [" + str(ws.url) + "] closed! " + str(close_msg) + " - " + str(close_status_code))
-        ppi("Retry : %s" % time.ctime())
-        time.sleep(3)
-        connect_data_feeder()
-    except Exception as e:
-        ppe('WS-Close failed: ', e)
-    
-def on_error_data_feeder(ws, error):
-    ppe('WS-Error ' + str(ws.url) + ' failed: ', error)
+        server_host = CON.replace('ws://', '').replace('wss://', '').replace('http://', '').replace('https://', '')
+        server_url = 'ws://' + server_host
+        sio.connect(server_url, transports=['websocket'])
+    except Exception:
+        try:
+            server_url = 'wss://' + server_host
+            sio.connect(server_url, transports=['websocket'], retry=True, wait_timeout=3)
+        except Exception:
+            pass
 
-    
+
+
 
 
 
@@ -618,10 +607,6 @@ if __name__ == "__main__":
         pass
 
 
-
-    global WS_DATA_FEEDER
-    WS_DATA_FEEDER = None
-
     global NEXT_MAP
     NEXT_MAP = []
 
@@ -676,7 +661,7 @@ if __name__ == "__main__":
     if args_post_check is not None: 
         ppi('Please check your arguments: ' + args_post_check)
     else:
-
+        
         try:
             connect_data_feeder()
         except Exception as e:
@@ -688,9 +673,7 @@ if __name__ == "__main__":
             ppe("Initializing voice recognition failed: ", e)
 
 
-time.sleep(30)
-    
 
 
 
-   
+time.sleep(5)

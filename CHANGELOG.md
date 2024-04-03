@@ -1,3 +1,8 @@
+## 1.0.11
+
+- switch to socketio-client
+
+
 ## 1.0.10
 
 - add wss support

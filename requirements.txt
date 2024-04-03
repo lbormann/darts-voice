@@ -1,5 +1,6 @@
-pyinstaller
-websocket-client==1.5.1
+pyinstaller==6.3.0
 pyaudio==0.2.12
 vosk==0.3.45
 sounddevice==0.4.6
+requests==2.31.0
+python-socketio==5.11.2
