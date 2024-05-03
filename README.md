@@ -1,8 +1,8 @@
-# AUTODARTS-VOICE
-[![Downloads](https://img.shields.io/github/downloads/lbormann/autodarts-voice/total.svg)](https://github.com/lbormann/autodarts-voice/releases/latest)
+# DARTS-VOICE
+[![Downloads](https://img.shields.io/github/downloads/lbormann/darts-voice/total.svg)](https://github.com/lbormann/darts-voice/releases/latest)
 
-Autodarts-voice transcribes your voice in realtime (offline) to control an autodarts-game. A running instance of https://github.com/lbormann/autodarts-caller is needed for processing commands.
-Autodarts-voice uses vosk. check it out: https://alphacephei.com/vosk
+Darts-voice transcribes your voice in realtime (offline) to control an https://autodarts.io game. A running instance of https://github.com/lbormann/darts-caller is needed for processing commands.
+Darts-voice uses vosk. check it out: https://alphacephei.com/vosk
 
 On Linux you need to install PortAudio:
 
@@ -15,7 +15,7 @@ On Linux you need to install PortAudio:
 
 ### Desktop-OS:
 
-- If you're running a desktop-driven OS it's recommended to use [autodarts-desktop](https://github.com/lbormann/autodarts-desktop) as it takes care of starting, updating, configurating and managing multiple apps.
+- If you're running a desktop-driven OS it's recommended to use [darts-hub](https://github.com/lbormann/darts-hub) as it takes care of starting, updating, configurating and managing multiple apps.
 
 
 ### Headless-OS:
@@ -33,7 +33,7 @@ On Linux you need to install PortAudio:
 
 #### Get the project
 
-    git clone https://github.com/lbormann/autodarts-voice.git
+    git clone https://github.com/lbormann/darts-voice.git
 
 Go to download-directory and type:
 
@@ -51,7 +51,7 @@ On MacOS:
 
 ### Prerequisite
 
-* You need to have a running caller - https://github.com/lbormann/autodarts-caller - (latest version)
+* You need to have a running caller - https://github.com/lbormann/darts-caller - (latest version)
 * Download and extract a model from here: https://alphacephei.com/vosk/models (recommendable small ones, eg.: https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip)
 * Make sure your machine is strong enough to handle complexity of model (large models claim high memory usage and are slow).
 * Make sure your microphone is configured as default in os.
@@ -62,7 +62,7 @@ On MacOS:
 
 Create a shortcut of the executable; right click on the shortcut -> select properties -> add arguments in the target input at the end of the text field.
 
-Example: C:\Downloads\autodarts-voice.exe -MP "C:\\vosk-models\\vosk-model-small-en-us-0.15"
+Example: C:\Downloads\darts-voice.exe -MP "C:\\vosk-models\\vosk-model-small-en-us-0.15"
 
 Save changes.
 Click on the shortcut to start the application.
@@ -72,7 +72,7 @@ Click on the shortcut to start the application.
 
 #### Example: Linux
 
-    python3 autodarts-voice.py -MP "C:\\vosk-models\\vosk-model-small-en-us-0.15"
+    python3 darts-voice.py -MP "C:\\vosk-models\\vosk-model-small-en-us-0.15"
 
 
 ### Usage
@@ -178,11 +178,11 @@ Here are some examples that could work out of the box with model [vosk-model-sma
 
 *`-CON / --connection`*
 
-Host address to data-feeder (autodarts-caller). By Default this is '127.0.0.1:8079' (means your local ip-address)
+Host address to data-feeder (darts-caller). By Default this is '127.0.0.1:8079' (means your local ip-address)
 
 *`-MP / --model_path`*
 
-You need to set an absolute path to your model directory. Moreover make sure the given path doesn't reside inside main-directory (autodarts-voice).
+You need to set an absolute path to your model directory. Moreover make sure the given path doesn't reside inside main-directory (darts-voice).
 
 *`-L / --language`*
 
@@ -293,7 +293,7 @@ _ _ _ _ _ _ _ _ _ _
 
 ## !!! IMPORTANT !!!
 
-This application requires a running instance of autodarts-caller https://github.com/lbormann/autodarts-caller
+This application requires a running instance of darts-caller https://github.com/lbormann/darts-caller
 
 
 ## Resources

@@ -35,7 +35,7 @@ sio = socketio.Client(http_session=http_session, logger=True, engineio_logger=Tr
 
 
 
-VERSION = '1.0.11'
+VERSION = '1.1.0'
 
 
 
@@ -650,7 +650,7 @@ if __name__ == "__main__":
     osRelease = platform.release()
     ppi('\r\n', None, '')
     ppi('##########################################', None, '')
-    ppi('       WELCOME TO AUTODARTS-VOICE', None, '')
+    ppi('       WELCOME TO DARTS-VOICE', None, '')
     ppi('##########################################', None, '')
     ppi('VERSION: ' + VERSION, None, '')
     ppi('RUNNING OS: ' + osType + ' | ' + osName + ' | ' + osRelease, None, '')

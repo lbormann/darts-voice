@@ -40,20 +40,20 @@ jobs:
         include:
           - os: macos-latest
             TARGET: macos
-            CMD_BUILD: pyinstaller -F -n autodarts-voice-mac -i resources/autodarts-voice.icns --noconsole --onefile --collect-all vosk autodarts-voice.py 
-            OUT_FILE_NAME: autodarts-voice-mac
+            CMD_BUILD: pyinstaller -F -n darts-voice-mac -i resources/darts-voice.icns --noconsole --onefile --collect-all vosk darts-voice.py 
+            OUT_FILE_NAME: darts-voice-mac
             ASSET_MIME: application/zip
 
           - os: ubuntu-20.04
             TARGET: ubuntu
-            CMD_BUILD: pyinstaller -F -n autodarts-voice -i resources/autodarts-voice.svg --noconsole --onefile --collect-all vosk autodarts-voice.py
-            OUT_FILE_NAME: autodarts-voice
+            CMD_BUILD: pyinstaller -F -n darts-voice -i resources/darts-voice.svg --noconsole --onefile --collect-all vosk darts-voice.py
+            OUT_FILE_NAME: darts-voice
             ASSET_MIME: application/octet-stream
 
           - os: windows-latest
             TARGET: windows
-            CMD_BUILD: pyinstaller -F -n autodarts-voice -i resources/autodarts-voice.ico --noconsole --onefile --collect-all vosk autodarts-voice.py
-            OUT_FILE_NAME: autodarts-voice.exe
+            CMD_BUILD: pyinstaller -F -n darts-voice -i resources/darts-voice.ico --noconsole --onefile --collect-all vosk darts-voice.py
+            OUT_FILE_NAME: darts-voice.exe
             ASSET_MIME: application/vnd.microsoft.portable-executable
 
           - os: ubuntu-20.04
@@ -62,8 +62,8 @@ jobs:
               sudo apt-get update
               sudo apt-get install -y qemu-user-static binfmt-support
               docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-              docker run --rm -v /usr/bin/qemu-arm-static:/usr/bin/qemu-arm-static --platform linux/arm64/v8 -v $(pwd):/workdir -w /workdir arm64v8/ubuntu:20.04 bash -c "DEBIAN_FRONTEND=noninteractive apt-get update -y && DEBIAN_FRONTEND=noninteractive apt-get install -y portaudio19-dev python3-pip && pip install -r requirements.txt && pyinstaller -F -n autodarts-voice-arm64 -i resources/autodarts-voice.svg --noconsole --onefile --collect-all vosk autodarts-voice.py"
-            OUT_FILE_NAME: autodarts-voice-arm64
+              docker run --rm -v /usr/bin/qemu-arm-static:/usr/bin/qemu-arm-static --platform linux/arm64/v8 -v $(pwd):/workdir -w /workdir arm64v8/ubuntu:20.04 bash -c "DEBIAN_FRONTEND=noninteractive apt-get update -y && DEBIAN_FRONTEND=noninteractive apt-get install -y portaudio19-dev python3-pip && pip install -r requirements.txt && pyinstaller -F -n darts-voice-arm64 -i resources/darts-voice.svg --noconsole --onefile --collect-all vosk darts-voice.py"
+            OUT_FILE_NAME: darts-voice-arm64
             ASSET_MIME: application/octet-stream
 
     steps:

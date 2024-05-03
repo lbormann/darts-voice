@@ -1,3 +1,8 @@
+## 1.1.0
+
+- rename application to darts-voice
+
+
 ## 1.0.11
 
 - switch to socketio-client
