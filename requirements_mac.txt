@@ -1,5 +1,5 @@
 pyinstaller==6.3.0
-pyaudio==0.2.12
+pyaudio==0.2.14
 vosk==0.3.44
 sounddevice==0.4.6
 requests==2.31.0
