@@ -176,22 +176,22 @@ Here are some examples that could work out of the box with model [vosk-model-sma
 - -KFIFTY / --keywords_fifty [OPTIONAL] [MULTIPLE ENTRIES POSSIBLE] [Default: []]
 - -CON / --connection [OPTIONAL] [Default: "127.0.0.1:8079"] 
 
-*`-CON / --connection`*
+#### *`-CON / --connection`*
 
-Host address to data-feeder (darts-caller). By Default this is '127.0.0.1:8079' (means your local ip-address)
+<p>Host address to data-feeder (darts-caller). By Default this is '127.0.0.1:8079' (means your local ip-address)</p>
 
-*`-MP / --model_path`*
+#### *`-MP / --model_path`*
 
-You need to set an absolute path to your model directory. Moreover make sure the given path doesn't reside inside main-directory (darts-voice).
+<p>You need to set an absolute path to your model directory. Moreover make sure the given path doesn't reside inside main-directory (darts-voice).</p>
 
-*`-L / --language`*
+#### *`-L / --language`*
 
-Language defines which [predefined keywords](#Languages) should be used.
+<p>Language defines which [predefined keywords](#Languages) should be used.</p>
 
 
-*`-K* / --keywords_*`*
+#### *`-K* / --keywords_*`*
 
-For every argument starting with 'K'/'keywords' you can set multiple values that merged with predefined keywords except you set -L to 0.
+<p>For every argument starting with 'K'/'keywords' you can set multiple values that merged with predefined keywords except you set -L to 0.</p>
     
 
 
